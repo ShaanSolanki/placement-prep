@@ -1,0 +1,587 @@
+
+> placement-prep@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by process 30832, using available port 3001 instead.
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.226.1:3001
+✓ Ready in 969ms
+
+○ Compiling / ...
+ GET / 200 in 8.2s (next.js: 6.3s, application-code: 1868ms)
+ GET /code/two-sum 200 in 1550ms (next.js: 1416ms, application-code: 134ms)
+ GET /tests 200 in 633ms (next.js: 536ms, application-code: 97ms)
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <LoadingBoundary name="tests/" loading={null}>
+      <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+        <RedirectBoundary>
+          <RedirectErrorBoundary router={{...}}>
+            <InnerLayoutRouter url="/tests" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+              <SegmentViewNode type="page" pagePath="(app)/test...">
+                <SegmentTrieNode>
+                <ClientPageRoot Component={function TestsPage} serverProvidedParams={{...}}>
+                  <TestsPage params={Promise} searchParams={Promise}>
+                    <div className="max-w-5xl ...">
+                      <PageHeader>
+                      <div>
+                      <div className="surface p-...">
+                        <div>
+                        <div className="grid sm:gr...">
+                          <LinkComponent href="/code/merg..." className={"surface-..."}>
+                            <a
+                              className={"surface-2 card-hover p-3 text-sm "}
+                              ref={function}
+                              onClick={function onClick}
+                              onMouseEnter={function onMouseEnter}
+                              onTouchStart={function onTouchStart}
++                             href="/code/merge-intervals"
+-                             href="/code/sqrt-x"
+                            >
+                              <div className="text-bone line-clamp-2">
++                               Merge Intervals
+-                               Sqrt(x)
+                              ...
+                          ...
+              ...
+            ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at throwOnHydrationMismatch (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3318:56)
+    at prepareToHydrateHostInstance (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3372:23)
+    at completeWork (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6922:60)
+    at runWithFiberInDEV (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at completeUnitOfWork (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64)
+    at div (<anonymous>)
+    at <unknown> (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/src_1z-knbc._.js:1247:239)
+    at Array.map (<anonymous>)
+    at TestsPage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/src_1z-knbc._.js:1241:42)
+    at ClientPageRoot (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_0-6zqf5._.js:6213:50)
+✓ Compiled in 69ms
+⨯ ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  [90m72 |[0m   };
+  [90m73 |[0m
+[31m[1m>[0m [90m74 |[0m   [36mconst[0m sprint = shuffle(codingProblems).slice([35m0[0m, [35m5[0m);
+  [90m   |[0m         [31m[1m^^^^^^[0m
+  [90m75 |[0m
+  [90m76 |[0m   [36mreturn[0m (
+  [90m77 |[0m     <div className=[32m"max-w-5xl mx-auto px-6 py-10"[0m>
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:14014:21)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13458:52) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:14014:21)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13458:52) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:14014:21)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13458:52) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:14014:21)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13458:52) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:14014:21)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13458:52) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13951:21)
+ GET /tests 500 in 1172ms (next.js: 1013ms, application-code: 159ms)
+⨯ ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  [90m72 |[0m   };
+  [90m73 |[0m
+[31m[1m>[0m [90m74 |[0m   [36mconst[0m sprint = shuffle(codingProblems).slice([35m0[0m, [35m5[0m);
+  [90m   |[0m         [31m[1m^^^^^^[0m
+  [90m75 |[0m
+  [90m76 |[0m   [36mreturn[0m (
+  [90m77 |[0m     <div className=[32m"max-w-5xl mx-auto px-6 py-10"[0m>
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+
+ GET /tests 500 in 33ms (next.js: 21ms, application-code: 12ms)
+[browser] Uncaught Error: ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/app/(app)/tests/page.tsx:74:9)
+    at <unknown> (Error: (./src/app/(app)/tests/page.tsx:74:9)
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+[browser] ./src/app/(app)/tests/page.tsx:74:9
+the name `sprint` is defined multiple times
+  72 |   };
+  73 |
+> 74 |   const sprint = shuffle(codingProblems).slice(0, 5);
+     |         ^^^^^^
+  75 |
+  76 |   return (
+  77 |     <div className="max-w-5xl mx-auto px-6 py-10">
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./src/app/(app)/tests/page.tsx [Client Component Browser]
+    ./src/app/(app)/tests/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/(app)/tests/page.tsx [Client Component SSR]
+    ./src/app/(app)/tests/page.tsx [Server Component] 
+    at handleErrors (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+    at processMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2835:28)
+    at <unknown> (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2680:13)
+    at WebSocket.handleMessage (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2325:17) (file://C:/Users/LOQ/OneDrive/Desktop/work/study/all in one/placement-prep/.next/dev/static/chunks/node_modules_next_dist_client_16lnmlo._.js:2774:21)
+✓ Compiled in 63ms
+ GET /tests 200 in 431ms (next.js: 138ms, application-code: 293ms)
+ GET /tests 200 in 102ms (next.js: 5ms, application-code: 97ms)
+ GET /aptitude/percentages 200 in 1364ms (next.js: 1270ms, application-code: 93ms)
+ GET /interview 200 in 535ms (next.js: 437ms, application-code: 98ms)
+ GET /dashboard 200 in 621ms (next.js: 516ms, application-code: 105ms)
+ GET /code 200 in 1916ms (next.js: 1817ms, application-code: 99ms)
+ GET /dashboard 200 in 101ms (next.js: 13ms, application-code: 88ms)
+ GET /code 200 in 103ms (next.js: 15ms, application-code: 88ms)
+ GET /dsa 200 in 2.1s (next.js: 1956ms, application-code: 108ms)
+ GET /dsa/find-maximum-and-minimum 200 in 3.4s (next.js: 3.3s, application-code: 125ms)
+ GET /code 200 in 105ms (next.js: 11ms, application-code: 94ms)
+ GET /code/two-sum 200 in 196ms (next.js: 103ms, application-code: 93ms)
+ GET /dsa 200 in 150ms (next.js: 17ms, application-code: 133ms)
+ GET /aptitude 200 in 1924ms (next.js: 1821ms, application-code: 103ms)
+✓ Compiled in 271ms
+ GET /dsa 200 in 175ms (next.js: 94ms, application-code: 81ms)
+ GET /dsa 200 in 39ms (next.js: 3ms, application-code: 36ms)
+ GET /dsa 200 in 836ms (next.js: 7ms, application-code: 829ms)
+ GET /dsa 200 in 839ms (next.js: 140ms, application-code: 699ms)
+ GET /dsa 200 in 841ms (next.js: 316ms, application-code: 525ms)
+ GET /dsa 200 in 547ms (next.js: 179ms, application-code: 368ms)
+ GET /dsa 200 in 405ms (next.js: 196ms, application-code: 209ms)
+ GET /dsa 200 in 504ms (next.js: 277ms, application-code: 227ms)
+ GET /dsa 200 in 613ms (next.js: 20ms, application-code: 593ms)
+ GET /dsa 200 in 521ms (next.js: 42ms, application-code: 479ms)
+ GET /dsa 200 in 507ms (next.js: 134ms, application-code: 373ms)
+ GET /dsa 200 in 506ms (next.js: 215ms, application-code: 291ms)
+ GET /dsa 200 in 302ms (next.js: 27ms, application-code: 275ms)
+ GET /dsa 200 in 307ms (next.js: 84ms, application-code: 224ms)
+ GET /dsa 200 in 275ms (next.js: 17ms, application-code: 258ms)
+ GET /dsa 200 in 182ms (next.js: 13ms, application-code: 168ms)
+ GET /dsa 200 in 182ms (next.js: 77ms, application-code: 105ms)
+✓ Compiled in 111ms
+ GET /dsa 200 in 174ms (next.js: 88ms, application-code: 86ms)
+✓ Compiled in 99ms
+ GET /dsa 200 in 197ms (next.js: 87ms, application-code: 111ms)
+✓ Compiled in 96ms
+ GET /dsa 200 in 175ms (next.js: 85ms, application-code: 90ms)
+✓ Compiled in 85ms
+ GET /dsa 200 in 273ms (next.js: 97ms, application-code: 176ms)
+ GET /dsa 200 in 150ms (next.js: 3ms, application-code: 147ms)
+ GET /dsa 200 in 152ms (next.js: 28ms, application-code: 124ms)
+ GET /dsa 200 in 153ms (next.js: 6ms, application-code: 148ms)
+ GET /dsa 200 in 153ms (next.js: 53ms, application-code: 99ms)
+ GET /dsa 200 in 182ms (next.js: 77ms, application-code: 104ms)
+ GET /dsa 200 in 224ms (next.js: 7ms, application-code: 216ms)
+ GET /dsa 200 in 191ms (next.js: 6ms, application-code: 185ms)
+ GET /dsa 200 in 157ms (next.js: 6ms, application-code: 151ms)
+ GET /dsa 200 in 156ms (next.js: 30ms, application-code: 127ms)
+ GET /dsa 200 in 156ms (next.js: 54ms, application-code: 102ms)
+ GET /dsa 200 in 76ms (next.js: 9ms, application-code: 67ms)
+✓ Compiled in 203ms
+ GET /dsa 200 in 347ms (next.js: 98ms, application-code: 249ms)
+ GET /dsa 200 in 187ms (next.js: 13ms, application-code: 174ms)
+ GET /dsa 200 in 116ms (next.js: 14ms, application-code: 102ms)
+✓ Compiled in 99ms
+ GET /dsa 200 in 181ms (next.js: 74ms, application-code: 107ms)
+✓ Compiled in 267ms
+ GET /dsa 200 in 174ms (next.js: 98ms, application-code: 76ms)
+ GET /code 200 in 939ms (next.js: 231ms, application-code: 709ms)
+ GET /code/reverse-linked-list 200 in 582ms (next.js: 125ms, application-code: 457ms)
+ GET /code/level-order-traversal 200 in 207ms (next.js: 31ms, application-code: 176ms)
+ GET / 200 in 523ms (next.js: 131ms, application-code: 393ms)
+ GET /dashboard 200 in 554ms (next.js: 462ms, application-code: 92ms)
+ GET /login 200 in 1709ms (next.js: 1654ms, application-code: 55ms)
+ GET /dashboard 200 in 99ms (next.js: 15ms, application-code: 84ms)
+ GET /dsa 200 in 69ms (next.js: 15ms, application-code: 54ms)
+ GET /dsa/find-maximum-and-minimum 200 in 319ms (next.js: 258ms, application-code: 60ms)
+ GET /code 200 in 58ms (next.js: 9ms, application-code: 49ms)
+ GET /dsa 200 in 90ms (next.js: 12ms, application-code: 78ms)
+ GET /dsa/binary-search 200 in 94ms (next.js: 34ms, application-code: 60ms)
+ GET /code 200 in 67ms (next.js: 14ms, application-code: 53ms)
+ GET /aptitude 200 in 256ms (next.js: 199ms, application-code: 57ms)
+ GET /interview 200 in 278ms (next.js: 207ms, application-code: 72ms)
+ GET /code 200 in 73ms (next.js: 14ms, application-code: 59ms)
+ GET /code/two-sum 200 in 77ms (next.js: 31ms, application-code: 46ms)
+ GET /dashboard 200 in 54ms (next.js: 8ms, application-code: 47ms)
+ GET /code 200 in 51ms (next.js: 9ms, application-code: 42ms)
+ GET /code/best-time-to-buy-sell-stock 200 in 66ms (next.js: 20ms, application-code: 45ms)
+ GET /code 200 in 66ms (next.js: 14ms, application-code: 52ms)
+ GET /code/two-sum 200 in 73ms (next.js: 24ms, application-code: 50ms)
+ GET /code 200 in 57ms (next.js: 8ms, application-code: 49ms)
+ GET /dashboard 200 in 69ms (next.js: 10ms, application-code: 58ms)
+✓ Compiled in 268ms
+ GET /dashboard 200 in 1290ms (next.js: 233ms, application-code: 1058ms)
+ GET /dashboard 200 in 1025ms (next.js: 320ms, application-code: 704ms)
+ GET /code/level-order-traversal 200 in 1031ms (next.js: 245ms, application-code: 785ms)
+ GET /dashboard 200 in 1104ms (next.js: 25ms, application-code: 1079ms)
+ GET /dashboard 200 in 1113ms (next.js: 172ms, application-code: 941ms)
+ GET /dashboard 200 in 1120ms (next.js: 109ms, application-code: 1011ms)
+ GET /dashboard 200 in 1117ms (next.js: 234ms, application-code: 883ms)
+ GET /code/level-order-traversal 200 in 1056ms (next.js: 33ms, application-code: 1023ms)
+ GET /dashboard 200 in 961ms (next.js: 21ms, application-code: 941ms)
+ GET /code/level-order-traversal 200 in 958ms (next.js: 97ms, application-code: 862ms)
+ GET /code/level-order-traversal 200 in 958ms (next.js: 167ms, application-code: 791ms)
+ GET /code/level-order-traversal 200 in 885ms (next.js: 161ms, application-code: 725ms)
+ GET /code/level-order-traversal 200 in 986ms (next.js: 232ms, application-code: 754ms)
+ GET /dashboard 200 in 692ms (next.js: 26ms, application-code: 666ms)
+ GET /code/level-order-traversal 200 in 598ms (next.js: 49ms, application-code: 549ms)
+ GET /dashboard 200 in 597ms (next.js: 175ms, application-code: 422ms)
+ GET /dashboard 200 in 657ms (next.js: 81ms, application-code: 576ms)
+ GET /dashboard 200 in 661ms (next.js: 156ms, application-code: 504ms)
+ GET /code/level-order-traversal 200 in 420ms (next.js: 41ms, application-code: 379ms)
+ GET /code/level-order-traversal 200 in 281ms (next.js: 22ms, application-code: 259ms)
+ GET /code/level-order-traversal 200 in 285ms (next.js: 91ms, application-code: 193ms)
+ GET /code/level-order-traversal 200 in 285ms (next.js: 162ms, application-code: 123ms)
+✓ Compiled in 147ms
+ GET /code/level-order-traversal 200 in 426ms (next.js: 248ms, application-code: 178ms)
+ GET /dashboard 200 in 91ms (next.js: 27ms, application-code: 64ms)
+✓ Compiled in 134ms
+ GET /code/level-order-traversal 200 in 632ms (next.js: 434ms, application-code: 198ms)
+ GET /dashboard 200 in 112ms (next.js: 27ms, application-code: 85ms)
+✓ Compiled in 155ms
+ GET /code/level-order-traversal 200 in 527ms (next.js: 344ms, application-code: 183ms)
+ GET /dashboard 200 in 107ms (next.js: 29ms, application-code: 77ms)
+✓ Compiled in 243ms
+ GET /code/level-order-traversal 200 in 497ms (next.js: 316ms, application-code: 181ms)
+ GET /dashboard 200 in 98ms (next.js: 32ms, application-code: 66ms)
+✓ Compiled in 67ms
+ GET /code/level-order-traversal 200 in 182ms (next.js: 89ms, application-code: 93ms)
+ GET /dashboard 200 in 46ms (next.js: 10ms, application-code: 36ms)
+✓ Compiled in 393ms
+ GET /dashboard 200 in 1009ms (next.js: 204ms, application-code: 805ms)
+ GET /code/level-order-traversal 200 in 753ms (next.js: 243ms, application-code: 511ms)
+ GET /dashboard 200 in 528ms (next.js: 19ms, application-code: 509ms)
+ GET /dashboard 200 in 437ms (next.js: 15ms, application-code: 422ms)
+ GET /code/level-order-traversal 200 in 361ms (next.js: 49ms, application-code: 312ms)
+ GET /code/level-order-traversal 200 in 124ms (next.js: 24ms, application-code: 100ms)
+✓ Compiled in 90ms
+ GET /code/level-order-traversal 200 in 440ms (next.js: 259ms, application-code: 180ms)
+ GET /dashboard 200 in 109ms (next.js: 26ms, application-code: 83ms)
+✓ Compiled in 124ms
+ GET /code/level-order-traversal 200 in 513ms (next.js: 342ms, application-code: 171ms)
+ GET /dashboard 200 in 94ms (next.js: 30ms, application-code: 64ms)
+✓ Compiled in 265ms
+ GET /dashboard 200 in 876ms (next.js: 95ms, application-code: 781ms)
+ GET /code/level-order-traversal 200 in 727ms (next.js: 346ms, application-code: 381ms)
+ GET /dashboard 200 in 398ms (next.js: 10ms, application-code: 388ms)
+ GET /dashboard 200 in 335ms (next.js: 13ms, application-code: 322ms)
+ GET /code/level-order-traversal 200 in 252ms (next.js: 28ms, application-code: 224ms)
+ GET /code/level-order-traversal 200 in 122ms (next.js: 17ms, application-code: 105ms)
+ GET /code/running-sum-1d 200 in 813ms (next.js: 25ms, application-code: 788ms)
+ GET /code/find-min-max 200 in 39ms (next.js: 14ms, application-code: 25ms)
+ GET /code 200 in 284ms (next.js: 236ms, application-code: 48ms)
+ GET /code/two-sum 200 in 84ms (next.js: 36ms, application-code: 49ms)
+ GET /code/best-time-to-buy-sell-stock 200 in 86ms (next.js: 35ms, application-code: 51ms)
+ GET /code/move-zeroes 200 in 93ms (next.js: 32ms, application-code: 62ms)
+ GET /dashboard 200 in 72ms (next.js: 17ms, application-code: 55ms)
+ GET /code 200 in 57ms (next.js: 9ms, application-code: 48ms)
+ GET /dsa 200 in 287ms (next.js: 228ms, application-code: 59ms)
+ GET /code 200 in 81ms (next.js: 9ms, application-code: 73ms)
+ GET /dsa 200 in 90ms (next.js: 13ms, application-code: 77ms)
+ GET /aptitude 200 in 298ms (next.js: 217ms, application-code: 81ms)
+ GET /interview 200 in 283ms (next.js: 230ms, application-code: 53ms)
+ GET /interview/variables-var-let-const 200 in 2.9s (next.js: 2.9s, application-code: 60ms)
+ GET /interview 200 in 61ms (next.js: 10ms, application-code: 51ms)
+ GET /tests 200 in 280ms (next.js: 225ms, application-code: 55ms)
+ GET /code 200 in 70ms (next.js: 9ms, application-code: 62ms)
+ GET /code/move-zeroes 200 in 82ms (next.js: 34ms, application-code: 48ms)
+ GET /code/majority-element 200 in 74ms (next.js: 25ms, application-code: 50ms)
+ GET /code/running-sum-1d 200 in 89ms (next.js: 25ms, application-code: 64ms)
+✓ Compiled in 157ms
+✓ Compiled in 61ms
+ GET /code/running-sum-1d 200 in 245ms (next.js: 113ms, application-code: 132ms)
+ GET /code/find-min-max 200 in 74ms (next.js: 5ms, application-code: 69ms)
+✓ Compiled in 42ms
+ GET /code/find-min-max 200 in 215ms (next.js: 181ms, application-code: 34ms)
+ GET /code/running-sum-1d 200 in 217ms (next.js: 136ms, application-code: 82ms)
+ GET /dashboard 200 in 71ms (next.js: 21ms, application-code: 50ms)
+✓ Compiled in 100ms
+ GET /dashboard 200 in 686ms (next.js: 170ms, application-code: 515ms)
+ GET /code/find-min-max 200 in 412ms (next.js: 327ms, application-code: 85ms)
+✓ Compiled in 193ms
+ GET /dashboard 200 in 853ms (next.js: 113ms, application-code: 740ms)
+ GET /code/find-min-max 200 in 681ms (next.js: 275ms, application-code: 406ms)
+ GET /dashboard 200 in 682ms (next.js: 347ms, application-code: 335ms)
+ GET /code/find-min-max 200 in 228ms (next.js: 28ms, application-code: 200ms)
+ GET / 200 in 379ms (next.js: 274ms, application-code: 104ms)
+✓ Compiled in 132ms
+ GET / 200 in 799ms (next.js: 311ms, application-code: 488ms)
+ GET /code/find-min-max 200 in 347ms (next.js: 261ms, application-code: 86ms)
+ GET /login 200 in 106ms (next.js: 33ms, application-code: 73ms)
+✓ Compiled in 251ms
+ GET /login 200 in 577ms (next.js: 116ms, application-code: 461ms)
+ GET /code/find-min-max 200 in 381ms (next.js: 302ms, application-code: 79ms)
+✓ Compiled in 306ms
+ GET /login 200 in 703ms (next.js: 117ms, application-code: 587ms)
+ GET /login 200 in 639ms (next.js: 12ms, application-code: 627ms)
+ GET /code/find-min-max 200 in 650ms (next.js: 359ms, application-code: 291ms)
+ GET /login 200 in 296ms (next.js: 11ms, application-code: 284ms)
+ GET /code/find-min-max 200 in 241ms (next.js: 14ms, application-code: 227ms)
+ GET /code/find-min-max 200 in 128ms (next.js: 15ms, application-code: 113ms)
+ GET /dashboard 200 in 81ms (next.js: 35ms, application-code: 46ms)
+✓ Compiled in 146ms
+ GET /dashboard 200 in 515ms (next.js: 106ms, application-code: 409ms)
+ GET /code/find-min-max 200 in 346ms (next.js: 266ms, application-code: 80ms)
+ GET /code/three-sum-tp 200 in 1024ms (next.js: 27ms, application-code: 997ms)
+✓ Compiled in 201ms
+ GET /dashboard 200 in 1097ms (next.js: 224ms, application-code: 874ms)
+ GET /code/three-sum-tp 200 in 1096ms (next.js: 715ms, application-code: 381ms)
+ GET /dashboard 200 in 446ms (next.js: 14ms, application-code: 432ms)
+ GET /dashboard 200 in 382ms (next.js: 14ms, application-code: 368ms)
+ GET /dashboard 200 in 382ms (next.js: 77ms, application-code: 305ms)
+ GET /code/three-sum-tp 200 in 384ms (next.js: 133ms, application-code: 251ms)
+ GET /code/three-sum-tp 200 in 166ms (next.js: 12ms, application-code: 154ms)
+ GET /code/three-sum-tp 200 in 166ms (next.js: 78ms, application-code: 89ms)
+ GET /dashboard 200 in 1591ms (next.js: 557ms, application-code: 1034ms)
+ GET /dashboard 200 in 1010ms (next.js: 13ms, application-code: 998ms)
+ GET /code/three-sum-tp 200 in 1088ms (next.js: 320ms, application-code: 768ms)
+ GET /dashboard 200 in 1143ms (next.js: 28ms, application-code: 1114ms)
+ GET /dashboard 200 in 1146ms (next.js: 264ms, application-code: 882ms)
+ GET /dashboard 200 in 1139ms (next.js: 374ms, application-code: 765ms)
+ GET /dashboard 200 in 1146ms (next.js: 313ms, application-code: 832ms)
+ GET /code/three-sum-tp 200 in 1064ms (next.js: 10ms, application-code: 1054ms)
+ GET /dashboard 200 in 992ms (next.js: 19ms, application-code: 974ms)
+ GET /code/three-sum-tp 200 in 918ms (next.js: 91ms, application-code: 828ms)
+ GET /code/three-sum-tp 200 in 994ms (next.js: 89ms, application-code: 905ms)
+ GET /code/three-sum-tp 200 in 924ms (next.js: 164ms, application-code: 760ms)
+ GET /code/three-sum-tp 200 in 926ms (next.js: 308ms, application-code: 618ms)
+ GET /dashboard 200 in 696ms (next.js: 19ms, application-code: 677ms)
+ GET /dashboard 200 in 763ms (next.js: 22ms, application-code: 741ms)
+ GET /dashboard 200 in 764ms (next.js: 87ms, application-code: 677ms)
+ GET /dashboard 200 in 1079ms (next.js: 148ms, application-code: 931ms)
+ GET /dashboard 200 in 1079ms (next.js: 279ms, application-code: 800ms)
+ GET /code/three-sum-tp 200 in 1086ms (next.js: 213ms, application-code: 873ms)
+ GET /code/three-sum-tp 200 in 734ms (next.js: 48ms, application-code: 686ms)
+ GET /dashboard 200 in 662ms (next.js: 36ms, application-code: 626ms)
+ GET /code/three-sum-tp 200 in 486ms (next.js: 27ms, application-code: 459ms)
+ GET /code/three-sum-tp 200 in 486ms (next.js: 112ms, application-code: 374ms)
+ GET /code/three-sum-tp 200 in 486ms (next.js: 180ms, application-code: 306ms)
+ GET /code/three-sum-tp 200 in 486ms (next.js: 242ms, application-code: 245ms)
+ GET /code/three-sum-tp 200 in 149ms (next.js: 19ms, application-code: 130ms)
+ GET /code 200 in 286ms (next.js: 213ms, application-code: 73ms)
+ GET /code/two-sum 200 in 67ms (next.js: 21ms, application-code: 46ms)
+✓ Compiled in 138ms
+ GET /code/two-sum 200 in 486ms (next.js: 142ms, application-code: 344ms)
+ GET /code/three-sum-tp 200 in 489ms (next.js: 221ms, application-code: 269ms)
+ GET /code/two-sum 200 in 190ms (next.js: 18ms, application-code: 172ms)
+ GET /code/three-sum-tp 200 in 188ms (next.js: 92ms, application-code: 96ms)
+ GET /code 200 in 62ms (next.js: 21ms, application-code: 41ms)
+ GET / 200 in 1296ms (next.js: 299ms, application-code: 997ms)
+ GET /dashboard 200 in 82ms (next.js: 28ms, application-code: 54ms)
+ GET /code 200 in 65ms (next.js: 10ms, application-code: 55ms)
+ GET /code/move-zeroes 200 in 83ms (next.js: 26ms, application-code: 57ms)
+ GET /code 200 in 80ms (next.js: 19ms, application-code: 61ms)
+ GET /code/move-zeroes 200 in 74ms (next.js: 26ms, application-code: 48ms)
+ GET /code/majority-element 200 in 87ms (next.js: 39ms, application-code: 48ms)
+ GET /code/running-sum-1d 200 in 88ms (next.js: 34ms, application-code: 54ms)
+ GET /code/find-min-max 200 in 67ms (next.js: 19ms, application-code: 48ms)
+ GET /code/second-largest-element 200 in 86ms (next.js: 30ms, application-code: 56ms)
+ GET /code/find-min-max 200 in 72ms (next.js: 22ms, application-code: 50ms)
+ GET /code/second-largest-element 200 in 76ms (next.js: 27ms, application-code: 50ms)
+ GET /code/max-consecutive-ones 200 in 60ms (next.js: 17ms, application-code: 43ms)
+ GET /code/second-largest-element 200 in 69ms (next.js: 21ms, application-code: 47ms)
+ GET /code/max-consecutive-ones 200 in 104ms (next.js: 36ms, application-code: 68ms)
+ GET /code/find-missing-number 200 in 79ms (next.js: 33ms, application-code: 46ms)
+ GET /code/single-number 200 in 63ms (next.js: 19ms, application-code: 44ms)
+ GET /code 200 in 59ms (next.js: 10ms, application-code: 49ms)
+ GET /code/find-missing-number 200 in 80ms (next.js: 24ms, application-code: 56ms)
+ GET /code/single-number 200 in 71ms (next.js: 24ms, application-code: 47ms)
+ GET /code 200 in 67ms (next.js: 9ms, application-code: 58ms)
+ GET /aptitude 200 in 313ms (next.js: 254ms, application-code: 59ms)
+ GET /aptitude/number-system 200 in 291ms (next.js: 224ms, application-code: 67ms)
+ GET /interview 200 in 210ms (next.js: 164ms, application-code: 46ms)
+ GET /dashboard 200 in 58ms (next.js: 10ms, application-code: 48ms)
+ GET /code 200 in 66ms (next.js: 9ms, application-code: 57ms)
+ GET /code/single-number 200 in 91ms (next.js: 40ms, application-code: 50ms)
+ GET /dashboard 200 in 49ms (next.js: 7ms, application-code: 42ms)
+ GET /dsa 200 in 335ms (next.js: 277ms, application-code: 59ms)
+ GET /aptitude 200 in 59ms (next.js: 9ms, application-code: 50ms)
+ GET /aptitude/number-system 200 in 68ms (next.js: 23ms, application-code: 45ms)
+ GET /aptitude 200 in 47ms (next.js: 7ms, application-code: 40ms)
+ GET /aptitude/number-system 200 in 64ms (next.js: 21ms, application-code: 43ms)
+ GET /aptitude 200 in 68ms (next.js: 8ms, application-code: 59ms)
+ GET /aptitude/vocabulary 200 in 87ms (next.js: 35ms, application-code: 53ms)

@@ -1,0 +1,1514 @@
+[
+  {
+    "title": "Variables: var, let, const",
+    "why": "To store values with different reassignment and scope rules.",
+    "realWorld": "Cart total variable changes; API base URL usually stays constant.",
+    "definition": "var is function-scoped; let/const are block-scoped; const prevents reassignment.",
+    "howItWorks": "JS creates bindings in scope. let/const live in temporal dead zone until initialized. const object properties can still mutate.",
+    "questions": [
+      "Difference between var/let/const?",
+      "Can const object be changed?",
+      "What is TDZ?",
+      "Why avoid var?",
+      "What is block scope?"
+    ],
+    "mistakes": [
+      "Thinking const makes object immutable",
+      "Using var in loops with async callbacks",
+      "Accessing let before declaration"
+    ],
+    "code": "const user = {name:\"A\"};\nuser.name = \"B\"; // allowed\n// user = {} // not allowed",
+    "memoryTrick": "const protects the box label, not the items inside the box.",
+    "fastRevision": "Prefer const by default, let for reassignment, avoid var.",
+    "section": "JavaScript Interview Core",
+    "id": "variables-var-let-const"
+  },
+  {
+    "title": "Scope and Hoisting",
+    "why": "To decide where variables/functions are accessible.",
+    "realWorld": "A variable inside checkout() should not leak globally.",
+    "definition": "Scope is visibility; hoisting is JS preparing declarations before execution.",
+    "howItWorks": "Function declarations are hoisted with body. var is hoisted as undefined. let/const are hoisted but unusable before initialization.",
+    "questions": [
+      "What gets hoisted?",
+      "Why var prints undefined?",
+      "What is lexical scope?",
+      "Block vs function scope?"
+    ],
+    "mistakes": [
+      "Saying let/const are not hoisted",
+      "Confusing scope chain with prototype chain",
+      "Creating accidental globals"
+    ],
+    "code": "console.log(a); // undefined\nvar a = 10;\n// console.log(b); let b=10 -> ReferenceError",
+    "memoryTrick": "JS scans the attendance list before class starts, but let/const students cannot answer",
+    "fastRevision": "Hoisting explains many output questions.",
+    "section": "JavaScript Interview Core",
+    "id": "scope-and-hoisting"
+  },
+  {
+    "title": "Closures",
+    "why": "To remember outer variables after outer function finishes.",
+    "realWorld": "A counter function keeps private count.",
+    "definition": "A closure is a function plus access to its lexical environment.",
+    "howItWorks": "Inner function retains references to outer variables, not copies. Used in callbacks, factories, private state, debounce.",
+    "questions": [
+      "What is closure?",
+      "Use cases?",
+      "Closure memory leak?",
+      "Output of loop with var?",
+      "How debounce uses closure?"
+    ],
+    "mistakes": [
+      "Thinking closure copies values always",
+      "Creating hidden memory leaks",
+      "Not knowing var loop issue"
+    ],
+    "code": "function makeCounter(){\nlet count=0;\nreturn () => ++count;\n}\nconst c=makeCounter(); c(); c(); // 2",
+    "memoryTrick": "Closure is a backpack. Function carries variables from home.",
+    "fastRevision": "Private state, callbacks, memoization, debounce.",
+    "section": "JavaScript Interview Core",
+    "id": "closures"
+  },
+  {
+    "title": "Event Loop",
+    "why": "To run async work without blocking main JS execution.",
+    "realWorld": "Timer callback runs after current call stack is empty.",
+    "definition": "Event loop coordinates call stack, task queues, and microtasks.",
+    "howItWorks": "Sync code runs first. Promise microtasks usually run before timer macrotasks. Browser and Node have runtime-specific phases.",
+    "questions": [
+      "Order of setTimeout vs Promise?",
+      "What is call stack?",
+      "Microtask vs macrotask?",
+      "Why JS is non-blocking?"
+    ],
+    "mistakes": [
+      "Saying setTimeout 0 runs immediately",
+      "Ignoring microtask priority",
+      "Blocking event loop with heavy loops"
+    ],
+    "code": "console.log(1);\nsetTimeout(()=>console.log(2),0);\nPromise.resolve().then(()=>console.log(3));\nconsole.log(4);\n// 1 4 3 2",
+    "memoryTrick": "Promise is VIP queue; timeout is regular queue.",
+    "fastRevision": "Sync -> microtasks -> tasks.",
+    "section": "JavaScript Interview Core",
+    "id": "event-loop"
+  },
+  {
+    "title": "Promises and Async/Await",
+    "why": "To write async code cleanly.",
+    "realWorld": "Fetch user profile, then fetch orders.",
+    "definition": "Promise represents future success/failure; async/await is syntax over promises.",
+    "howItWorks": "async function returns a promise. await pauses that async function, not the entire JS thread.",
+    "questions": [
+      "Promise states?",
+      "async await vs promise?",
+      "How catch works?",
+      "Promise.all vs allSettled?",
+      "What is race?"
+    ],
+    "mistakes": [
+      "Forgetting await in try/catch",
+      "Serial awaiting independent calls",
+      "Not handling rejected promises"
+    ],
+    "code": "async function load(){\ntry { return await fetch(\"/api/user\"); }\ncatch(e){ console.error(e); }\n}",
+    "memoryTrick": "async/await is promise in kurta-pajama: same person, cleaner look.",
+    "fastRevision": "Use Promise.all for independent parallel tasks.",
+    "section": "JavaScript Interview Core",
+    "id": "promises-and-async-await"
+  },
+  {
+    "title": "Callbacks",
+    "why": "To pass behavior into functions.",
+    "realWorld": "Array map callback transforms each item.",
+    "definition": "A callback is a function passed to another function to be called later.",
+    "howItWorks": "Callbacks power events, timers, array methods, and older async APIs.",
+    "questions": [
+      "What is callback hell?",
+      "How to avoid it?",
+      "Sync vs async callback?",
+      "Error-first callbacks?"
+    ],
+    "mistakes": [
+      "Assuming all callbacks are async",
+      "Nested pyramid code",
+      "Forgetting return inside array callbacks"
+    ],
+    "code": "[1,2,3].map(n => n * 2); // [2,4,6]",
+    "memoryTrick": "Callback = call me back later. Simple.",
+    "fastRevision": "Callbacks are foundation; promises improve async composition.",
+    "section": "JavaScript Interview Core",
+    "id": "callbacks"
+  },
+  {
+    "title": "Prototype",
+    "why": "To share methods across objects efficiently.",
+    "realWorld": "All arrays share push/map from Array.prototype.",
+    "definition": "Prototype is the object another object delegates property lookup to.",
+    "howItWorks": "If property not found on object, JS checks prototype chain until null.",
+    "questions": [
+      "Prototype vs class?",
+      "What is __proto__?",
+      "How inheritance works?",
+      "Prototype chain output?"
+    ],
+    "mistakes": [
+      "Confusing prototype with scope",
+      "Mutating built-in prototypes",
+      "Thinking class removes prototypes"
+    ],
+    "code": "function User(name){ this.name=name }\nUser.prototype.say=function(){return this.name}\nnew User(\"A\").say();",
+    "memoryTrick": "Prototype is family WhatsApp group: shared methods live there.",
+    "fastRevision": "Classes are syntactic sugar over prototypes.",
+    "section": "JavaScript Interview Core",
+    "id": "prototype"
+  },
+  {
+    "title": "this Keyword",
+    "why": "To refer to calling context.",
+    "realWorld": "obj.say() gets this=obj; arrow keeps outer this.",
+    "definition": "this is determined by how a function is called, except arrows capture lexical this.",
+    "howItWorks": "Default, implicit, explicit, new binding decide this. Arrow functions do not bind their own this.",
+    "questions": [
+      "What is this in arrow?",
+      "call/apply/bind?",
+      "this in event handler?",
+      "this in class methods?"
+    ],
+    "mistakes": [
+      "Losing this when passing method",
+      "Using arrow for prototype methods",
+      "Assuming this means where function is written"
+    ],
+    "code": "const obj={x:1, f(){return this.x}};\nconst g=obj.f; g(); // undefined in strict mode",
+    "memoryTrick": "this is not address proof; it depends who called you.",
+    "fastRevision": "Arrow = no own this.",
+    "section": "JavaScript Interview Core",
+    "id": "this-keyword"
+  },
+  {
+    "title": "Map, Filter, Reduce",
+    "why": "To transform arrays declaratively.",
+    "realWorld": "Cart totals: map prices, filter active, reduce sum.",
+    "definition": "map transforms, filter selects, reduce accumulates.",
+    "howItWorks": "They return new values and do not mutate original array unless callback mutates objects.",
+    "questions": [
+      "map vs forEach?",
+      "reduce use cases?",
+      "Chaining methods?",
+      "Performance?"
+    ],
+    "mistakes": [
+      "Using map for side effects",
+      "Forgetting initial value in reduce",
+      "Mutating objects accidentally"
+    ],
+    "code": "const total = cart\n.filter(i=>i.inStock)\n.map(i=>i.price*i.qty)\n.reduce((a,b)=>a+b,0);",
+    "memoryTrick": "map = change clothes, filter = bouncer, reduce = final bill.",
+    "fastRevision": "Know callback return values.",
+    "section": "JavaScript Interview Core",
+    "id": "map-filter-reduce"
+  },
+  {
+    "title": "Debouncing and Throttling",
+    "why": "To control high-frequency events.",
+    "realWorld": "Search box API call after typing stops; scroll handler once per interval.",
+    "definition": "Debounce waits for silence; throttle runs at fixed intervals.",
+    "howItWorks": "Both use timers/closures to reduce work and improve performance.",
+    "questions": [
+      "Debounce vs throttle?",
+      "Implement debounce?",
+      "Where used?",
+      "Leading/trailing calls?"
+    ],
+    "mistakes": [
+      "Using debounce for scroll progress",
+      "Not clearing timeout",
+      "Losing this/args"
+    ],
+    "code": "function debounce(fn, delay){\nlet id;\nreturn (...args)=>{ clearTimeout(id); id=setTimeout(()=>fn(...args),delay); };\n}",
+    "memoryTrick": "Debounce = wait till person stops talking. Throttle = one reply every 1 sec.",
+    "fastRevision": "Search -> debounce, scroll/resize -> throttle.",
+    "section": "JavaScript Interview Core",
+    "id": "debouncing-and-throttling"
+  },
+  {
+    "title": "DOM Events: Bubbling and Capturing",
+    "why": "To control event propagation.",
+    "realWorld": "Click button inside card; event can reach parent card.",
+    "definition": "Capturing goes down, target fires, bubbling goes up.",
+    "howItWorks": "addEventListener third option/useCapture controls phase; stopPropagation stops further travel.",
+    "questions": [
+      "Event delegation?",
+      "Bubbling vs capturing?",
+      "stopPropagation?",
+      "preventDefault?"
+    ],
+    "mistakes": [
+      "Confusing preventDefault with stopPropagation",
+      "Adding listeners to every child",
+      "Ignoring event.target/currentTarget"
+    ],
+    "code": "list.addEventListener(\"click\", e => {\nif(e.target.matches(\"button\")) console.log(\"delete\");\n});",
+    "memoryTrick": "Event is a courier: parent -> child -> parent path.",
+    "fastRevision": "Delegation saves listeners.",
+    "section": "JavaScript Interview Core",
+    "id": "dom-events-bubbling-and-capturing"
+  },
+  {
+    "title": "Storage: localStorage, sessionStorage, Cookies",
+    "why": "To persist client-side state.",
+    "realWorld": "Theme in localStorage; auth session cookie; tab-specific wizard in sessionStorage.",
+    "definition": "localStorage persists, sessionStorage per tab, cookies travel with requests.",
+    "howItWorks": "Cookies can be HttpOnly/Secure/SameSite. localStorage is accessible to JS, so XSS can read it.",
+    "questions": [
+      "Where store JWT?",
+      "Cookie vs localStorage?",
+      "What is HttpOnly?",
+      "SameSite?"
+    ],
+    "mistakes": [
+      "Putting sensitive tokens in localStorage",
+      "Forgetting cookie size limits",
+      "Not setting Secure in production"
+    ],
+    "code": "document.cookie = \"theme=dark; SameSite=Lax\";",
+    "memoryTrick": "Cookie is passport shown to server; localStorage is desk drawer JS can open.",
+    "fastRevision": "For auth, prefer secure HttpOnly cookies when possible.",
+    "section": "JavaScript Interview Core",
+    "id": "storage-localstorage-sessionstorage-cookies"
+  },
+  {
+    "title": "Virtual DOM",
+    "why": "To make UI updates predictable and efficient.",
+    "realWorld": "State changes in a todo app update only affected UI in real DOM.",
+    "definition": "Virtual DOM is an in-memory representation React compares before updating browser DOM.",
+    "howItWorks": "React renders components to a tree, diffs with previous tree, then commits necessary DOM changes.",
+    "questions": [
+      "What is Virtual DOM?",
+      "Is it always faster?",
+      "Reconciliation?",
+      "Keys role?"
+    ],
+    "mistakes": [
+      "Saying React updates entire DOM",
+      "Using index keys blindly",
+      "Thinking VDOM is browser feature"
+    ],
+    "code": "",
+    "memoryTrick": "React checks the draft before editing the real notebook.",
+    "fastRevision": "Render -> diff -> commit.",
+    "section": "React.js Interview Core",
+    "id": "virtual-dom"
+  },
+  {
+    "title": "JSX",
+    "why": "To write UI structure inside JS with expressions.",
+    "realWorld": "composes UI with data.",
+    "definition": "JSX is syntax that compiles to React element creation.",
+    "howItWorks": "JSX allows JS expressions in braces and must return one parent element or fragment.",
+    "questions": [
+      "JSX vs HTML?",
+      "Why className?",
+      "Why keys?",
+      "Can JSX contain loops?"
+    ],
+    "mistakes": [
+      "Using if statement directly in JSX expression",
+      "Forgetting closing tags",
+      "Using class instead of className"
+    ],
+    "code": "const ui = <h1>Hello {name}</h1>;",
+    "memoryTrick": "JSX is HTML-looking JavaScript, not HTML.",
+    "fastRevision": "Use map for lists, ternary/&& for conditions.",
+    "section": "React.js Interview Core",
+    "id": "jsx"
+  },
+  {
+    "title": "Props and State",
+    "why": "To pass data and manage changing UI.",
+    "realWorld": "Parent passes user prop; child tracks input state.",
+    "definition": "Props are external inputs; state is internal component memory.",
+    "howItWorks": "Changing state triggers render. Props should be treated read-only by child.",
+    "questions": [
+      "Props vs state?",
+      "Why immutable state?",
+      "Lifting state up?",
+      "Prop drilling?"
+    ],
+    "mistakes": [
+      "Mutating state directly",
+      "Copying props into state unnecessarily",
+      "Too much global state"
+    ],
+    "code": "const [count,setCount]=useState(0);\n<button onClick={()=>setCount(c=>c+1)}>+</button>",
+    "memoryTrick": "Props = parcel from parent; state = personal diary.",
+    "fastRevision": "State change triggers re-render.",
+    "section": "React.js Interview Core",
+    "id": "props-and-state"
+  },
+  {
+    "title": "useEffect",
+    "why": "To synchronize component with external systems.",
+    "realWorld": "Fetch data, subscribe to socket, update document title.",
+    "definition": "useEffect runs side effects after render based on dependency array.",
+    "howItWorks": "React runs effect after paint; cleanup runs before re-run/unmount. Dependencies control when it re-runs.",
+    "questions": [
+      "When useEffect runs?",
+      "Cleanup?",
+      "Dependency array?",
+      "Why infinite loop?"
+    ],
+    "mistakes": [
+      "Putting derived state in effect",
+      "Missing dependencies",
+      "Fetching without abort/cleanup"
+    ],
+    "code": "useEffect(()=>{\nconst id=setInterval(tick,1000);\nreturn ()=>clearInterval(id);\n},[]);",
+    "memoryTrick": "Effect = after-render side job, not a calculator.",
+    "fastRevision": "Use for external sync, not normal calculations.",
+    "section": "React.js Interview Core",
+    "id": "useeffect"
+  },
+  {
+    "title": "useMemo and useCallback",
+    "why": "To avoid expensive recalculation or unstable references.",
+    "realWorld": "Memoize filtered list; stable callback passed to memoized child.",
+    "definition": "useMemo caches value; useCallback caches function reference.",
+    "howItWorks": "They help when calculation is expensive or referential equality affects child renders.",
+    "questions": [
+      "useMemo vs useCallback?",
+      "When not to use?",
+      "React.memo relation?",
+      "Dependency array?"
+    ],
+    "mistakes": [
+      "Overusing memo everywhere",
+      "Wrong dependencies",
+      "Expecting useMemo for correctness"
+    ],
+    "code": "const total = useMemo(()=>items.reduce((s,i)=>s+i.price,0),[items]);",
+    "memoryTrick": "Memoization is a sticky note: reuse until inputs change.",
+    "fastRevision": "Performance tool, not default habit.",
+    "section": "React.js Interview Core",
+    "id": "usememo-and-usecallback"
+  },
+  {
+    "title": "useRef",
+    "why": "To store mutable values without re-rendering.",
+    "realWorld": "Focus input; store timer id; track previous value.",
+    "definition": "useRef returns a stable object whose .current can change without render.",
+    "howItWorks": "DOM refs are assigned after render. Updating ref does not trigger render.",
+    "questions": [
+      "useRef vs useState?",
+      "DOM access?",
+      "Previous value?",
+      "Why not for UI state?"
+    ],
+    "mistakes": [
+      "Using ref for visible UI data",
+      "Reading DOM before mount",
+      "Mutating ref and expecting UI update"
+    ],
+    "code": "const inputRef=useRef(null);\n<input ref={inputRef}/>\ninputRef.current.focus();",
+    "memoryTrick": "Ref is a secret pocket: React will not announce changes.",
+    "fastRevision": "Use for DOM and mutable non-UI values.",
+    "section": "React.js Interview Core",
+    "id": "useref"
+  },
+  {
+    "title": "Context API",
+    "why": "To avoid prop drilling for shared values.",
+    "realWorld": "Theme, auth user, locale.",
+    "definition": "Context passes data through tree without manual props at every level.",
+    "howItWorks": "Provider supplies value; consumers re-render when value identity changes.",
+    "questions": [
+      "Context vs Redux?",
+      "Performance issues?",
+      "Provider? Consumer?",
+      "Use cases?"
+    ],
+    "mistakes": [
+      "Putting rapidly changing state in one huge context",
+      "Not memoizing provider value",
+      "Using context for everything"
+    ],
+    "code": "const ThemeContext=createContext(\"light\");\nconst theme=useContext(ThemeContext);",
+    "memoryTrick": "Context is office announcement system.",
+    "fastRevision": "Great for low-frequency global values.",
+    "section": "React.js Interview Core",
+    "id": "context-api"
+  },
+  {
+    "title": "Redux Basics",
+    "why": "To manage predictable global state.",
+    "realWorld": "Cart, auth, complex dashboards.",
+    "definition": "Redux uses a store, actions, reducers, and predictable state updates.",
+    "howItWorks": "UI dispatches action; reducer returns new state; subscribers update.",
+    "questions": [
+      "Redux flow?",
+      "Reducer purity?",
+      "Redux vs Context?",
+      "Toolkit?"
+    ],
+    "mistakes": [
+      "Mutating state in old Redux reducers",
+      "Using Redux for local form input",
+      "Async logic confusion"
+    ],
+    "code": "dispatch({type:\"cart/add\", payload:item});",
+    "memoryTrick": "Redux is bank ledger: action receipt, reducer accountant.",
+    "fastRevision": "Use when state transitions are complex/shared.",
+    "section": "React.js Interview Core",
+    "id": "redux-basics"
+  },
+  {
+    "title": "Re-rendering and Performance",
+    "why": "To understand why UI updates and how to optimize.",
+    "realWorld": "Parent state change may re-render child.",
+    "definition": "Re-render means React calls component function again to compute UI.",
+    "howItWorks": "Render is not always DOM update. Memo, keys, stable props, virtualization reduce unnecessary work.",
+    "questions": [
+      "What causes re-render?",
+      "React.memo?",
+      "Keys?",
+      "Why child renders?",
+      "Optimization methods?"
+    ],
+    "mistakes": [
+      "Thinking re-render equals DOM repaint",
+      "Premature optimization",
+      "Unstable inline objects causing memo miss"
+    ],
+    "code": "const Child = React.memo(function Child({name}){ return <p>{name}</p> });",
+    "memoryTrick": "React is overprotective friend: one state changed, it checks the group.",
+    "fastRevision": "Measure first; memo second.",
+    "section": "React.js Interview Core",
+    "id": "re-rendering-and-performance"
+  },
+  {
+    "title": "Controlled vs Uncontrolled Components",
+    "why": "To manage form data predictably.",
+    "realWorld": "Controlled input value comes from React state.",
+    "definition": "Controlled components are driven by state; uncontrolled read from DOM refs.",
+    "howItWorks": "Controlled gives validation and instant UI logic; uncontrolled can be simpler/faster for simple forms.",
+    "questions": [
+      "Controlled vs uncontrolled?",
+      "Why value+onChange?",
+      "When use ref?",
+      "Form libraries?"
+    ],
+    "mistakes": [
+      "value without onChange",
+      "Mixing controlled/uncontrolled",
+      "Storing every form globally"
+    ],
+    "code": "<input value={email} onChange={e=>setEmail(e.target.value)} />",
+    "memoryTrick": "Controlled = React is driving; uncontrolled = DOM is driving.",
+    "fastRevision": "Interviews expect controlled forms.",
+    "section": "React.js Interview Core",
+    "id": "controlled-vs-uncontrolled-components"
+  },
+  {
+    "title": "React Router",
+    "why": "To create client-side navigation.",
+    "realWorld": "Dashboard route /users/:id renders user page without full reload.",
+    "definition": "React Router maps URL to components in SPA.",
+    "howItWorks": "Routes, params, nested routes, loaders/actions in modern versions support navigation/data patterns.",
+    "questions": [
+      "SPA routing?",
+      "useParams?",
+      "Protected routes?",
+      "Nested routes?"
+    ],
+    "mistakes": [
+      "Using anchor reloads accidentally",
+      "Auth check only on frontend",
+      "Not handling 404"
+    ],
+    "code": "<Route path=\"/users/:id\" element={<User/>} />",
+    "memoryTrick": "URL is state too.",
+    "fastRevision": "Frontend route protection is UX, backend auth is security.",
+    "section": "React.js Interview Core",
+    "id": "react-router"
+  },
+  {
+    "title": "CSR, SSR, SSG, ISR",
+    "why": "To choose the right rendering strategy.",
+    "realWorld": "Dashboard CSR; product page SSG/ISR; account page SSR.",
+    "definition": "CSR renders in browser; SSR per request; SSG at build; ISR periodically regenerates static pages.",
+    "howItWorks": "Next.js supports mixed rendering. Data freshness, SEO, personalization, and cost decide the strategy.",
+    "questions": [
+      "CSR vs SSR?",
+      "SSG vs ISR?",
+      "When use SSR?",
+      "SEO impact?"
+    ],
+    "mistakes": [
+      "Using SSR for everything",
+      "Ignoring cache invalidation",
+      "Personalized data in static pages"
+    ],
+    "code": "",
+    "memoryTrick": "Restaurant analogy: CSR cook at table, SSR cook per order, SSG pre-packed, ISR refresh",
+    "fastRevision": "SEO/public -> SSG/ISR; personalized -> SSR/CSR.",
+    "section": "Next.js Interview Core",
+    "id": "csr-ssr-ssg-isr"
+  },
+  {
+    "title": "App Router",
+    "why": "To structure routes with layouts and server components.",
+    "realWorld": "app/dashboard/page.tsx plus layout.tsx for nested UI.",
+    "definition": "App Router is file-system routing in app/ using React Server Components and layouts.",
+    "howItWorks": "Special files page, layout, loading, error, route, middleware create UI/data/API boundaries.",
+    "questions": [
+      "App Router vs Pages Router?",
+      "layout vs page?",
+      "loading/error files?",
+      "Route groups?"
+    ],
+    "mistakes": [
+      "Putting client hooks in server components",
+      "Overusing use client",
+      "Confusing route handlers with server actions"
+    ],
+    "code": "app/users/[id]/page.tsx\napp/api/users/route.ts",
+    "memoryTrick": "Folders become URLs; special files become behavior.",
+    "fastRevision": "New projects usually use App Router.",
+    "section": "Next.js Interview Core",
+    "id": "app-router"
+  },
+  {
+    "title": "Server and Client Components",
+    "why": "To reduce client JS and place work correctly.",
+    "realWorld": "Product list rendered on server; Add to cart button client.",
+    "definition": "Server Components render on server; Client Components run interactive code in browser.",
+    "howItWorks": "Server components can fetch data and access backend resources; client components use hooks/events and require use client.",
+    "questions": [
+      "When use client?",
+      "Can server component use state?",
+      "Can client import server?",
+      "Bundle size?"
+    ],
+    "mistakes": [
+      "Marking root layout use client",
+      "Using browser APIs on server",
+      "Passing functions from server to client"
+    ],
+    "code": "'use client'\nexport default function Button(){ const [n,setN]=useState(0); }",
+    "memoryTrick": "Server component = chef kitchen; client component = waiter interacting with customer.",
+    "fastRevision": "Interactivity needs client.",
+    "section": "Next.js Interview Core",
+    "id": "server-and-client-components"
+  },
+  {
+    "title": "Metadata and SEO",
+    "why": "To manage title, description, Open Graph, robots.",
+    "realWorld": "Product page dynamic metadata for product name.",
+    "definition": "Metadata API defines SEO metadata per route.",
+    "howItWorks": "Static or dynamic metadata can be exported; Next merges metadata through route segments.",
+    "questions": [
+      "generateMetadata?",
+      "SEO in Next?",
+      "OpenGraph?",
+      "robots?"
+    ],
+    "mistakes": [
+      "Setting document head manually everywhere",
+      "Missing canonical/metadata",
+      "Using client-only SEO for crawlers"
+    ],
+    "code": "export const metadata = { title:\"Home\", description:\"...\" };",
+    "memoryTrick": "Metadata is the business card of your page.",
+    "fastRevision": "Use metadata API in App Router.",
+    "section": "Next.js Interview Core",
+    "id": "metadata-and-seo"
+  },
+  {
+    "title": "API Routes / Route Handlers",
+    "why": "To build backend endpoints inside Next app.",
+    "realWorld": "/api/login route validates credentials and sets cookie.",
+    "definition": "Route handlers define HTTP methods for API endpoints in app router.",
+    "howItWorks": "Export GET/POST etc from route.ts. Handle request, return Response/NextResponse.",
+    "questions": [
+      "API routes vs Express?",
+      "Route handlers?",
+      "Edge/runtime?",
+      "Cookies?"
+    ],
+    "mistakes": [
+      "Putting secrets in client code",
+      "No validation",
+      "Returning stack traces"
+    ],
+    "code": "export async function GET(){ return Response.json({ok:true}); }",
+    "memoryTrick": "Small backend inside frontend house.",
+    "fastRevision": "Good for BFF/light APIs; large APIs may use dedicated backend.",
+    "section": "Next.js Interview Core",
+    "id": "api-routes-route-handlers"
+  },
+  {
+    "title": "Middleware",
+    "why": "To run logic before request reaches route.",
+    "realWorld": "Redirect unauthenticated user from /dashboard.",
+    "definition": "Middleware intercepts matching requests for auth, redirects, headers, rewrites.",
+    "howItWorks": "Runs before cached content/routes. Keep it lightweight and edge-compatible.",
+    "questions": [
+      "Use cases?",
+      "Matcher?",
+      "Auth in middleware?",
+      "Limitations?"
+    ],
+    "mistakes": [
+      "Doing heavy DB work in middleware",
+      "Trusting frontend middleware as full security",
+      "Bad matcher causing slow app"
+    ],
+    "code": "export function middleware(req){ return NextResponse.next(); }",
+    "memoryTrick": "Security guard at building gate, not the entire police department.",
+    "fastRevision": "Use for quick checks/redirects.",
+    "section": "Next.js Interview Core",
+    "id": "middleware"
+  },
+  {
+    "title": "Next.js Caching",
+    "why": "To control performance and freshness.",
+    "realWorld": "Cache product data, no-store admin stats.",
+    "definition": "Next caches fetches/routes depending on settings and revalidation.",
+    "howItWorks": "Use cache options, revalidate, dynamic rendering, tags, and path revalidation depending on app needs.",
+    "questions": [
+      "Static vs dynamic?",
+      "revalidate?",
+      "no-store?",
+      "Cache invalidation?"
+    ],
+    "mistakes": [
+      "Not knowing data is cached",
+      "Using stale personalized data",
+      "Ignoring revalidate after mutations"
+    ],
+    "code": "fetch('/api/products', { next: { revalidate: 60 } })",
+    "memoryTrick": "Cache is fridge food: fast, but check expiry.",
+    "fastRevision": "Freshness needs explicit strategy.",
+    "section": "Next.js Interview Core",
+    "id": "next-js-caching"
+  },
+  {
+    "title": "Image Optimization and Deployment",
+    "why": "To improve performance and production readiness.",
+    "realWorld": "next/image serves responsive optimized images.",
+    "definition": "Next provides image optimization and deploys well on Vercel/Node platforms.",
+    "howItWorks": "Use Image component, environment variables, build output, and platform limits carefully.",
+    "questions": [
+      "next/image benefits?",
+      "env variables?",
+      "Vercel vs self-host?",
+      "Build vs runtime?"
+    ],
+    "mistakes": [
+      "Using raw huge images",
+      "Exposing secrets with NEXT_PUBLIC",
+      "Ignoring build errors"
+    ],
+    "code": "<Image src=\"/hero.png\" width={800} height={400} alt=\"Hero\" />",
+    "memoryTrick": "NEXT_PUBLIC means public billboard.",
+    "fastRevision": "Use env vars safely; optimize assets.",
+    "section": "Next.js Interview Core",
+    "id": "image-optimization-and-deployment"
+  },
+  {
+    "title": "Node.js Runtime and Single Thread",
+    "why": "To run JavaScript outside browser for servers/tools.",
+    "realWorld": "Express API handles many users with async I/O.",
+    "definition": "Node is a JS runtime built for non-blocking I/O.",
+    "howItWorks": "JavaScript runs on main thread; libuv/event loop/worker pool handle async I/O and some expensive tasks.",
+    "questions": [
+      "Is Node single-threaded?",
+      "Why scalable?",
+      "CPU-heavy tasks?",
+      "Worker pool?"
+    ],
+    "mistakes": [
+      "Doing CPU loops in request handler",
+      "Saying Node has no threads",
+      "Blocking event loop"
+    ],
+    "code": "import http from \"node:http\";\nhttp.createServer((req,res)=>res.end(\"ok\")).listen(3000);",
+    "memoryTrick": "One cashier, many pending orders, kitchen workers help.",
+    "fastRevision": "Great for I/O; be careful with CPU-heavy tasks.",
+    "section": "Node.js and Express Interview Core",
+    "id": "node-js-runtime-and-single-thread"
+  },
+  {
+    "title": "Streams and Buffers",
+    "why": "To handle large data efficiently.",
+    "realWorld": "Upload/download video without loading whole file into memory.",
+    "definition": "Buffer stores binary chunks; stream processes data chunk by chunk.",
+    "howItWorks": "Readable/writable/transform streams handle backpressure and memory efficiency.",
+    "questions": [
+      "What is stream?",
+      "Buffer?",
+      "Backpressure?",
+      "pipe?"
+    ],
+    "mistakes": [
+      "Reading huge file fully",
+      "Ignoring stream errors",
+      "Confusing Buffer with string"
+    ],
+    "code": "fs.createReadStream(\"big.zip\").pipe(res);",
+    "memoryTrick": "Stream = water pipe, not bucket.",
+    "fastRevision": "Use streams for large files.",
+    "section": "Node.js and Express Interview Core",
+    "id": "streams-and-buffers"
+  },
+  {
+    "title": "Process, Thread Pool, Cluster",
+    "why": "To understand production Node behavior.",
+    "realWorld": "Cluster uses multiple CPU cores for web server workers.",
+    "definition": "process gives runtime info; thread pool handles expensive async tasks; cluster forks processes.",
+    "howItWorks": "UV thread pool handles fs/crypto/dns/zlib. Cluster/process managers scale across cores.",
+    "questions": [
+      "cluster vs worker_threads?",
+      "process.env?",
+      "PM2?",
+      "Thread pool size?"
+    ],
+    "mistakes": [
+      "Storing secrets in code",
+      "Not handling SIGTERM",
+      "Assuming one Node process uses all cores"
+    ],
+    "code": "process.on(\"SIGTERM\", async()=>{ await closeDb(); process.exit(0); });",
+    "memoryTrick": "process is the app passport.",
+    "fastRevision": "Graceful shutdown matters.",
+    "section": "Node.js and Express Interview Core",
+    "id": "process-thread-pool-cluster"
+  },
+  {
+    "title": "Express Middleware",
+    "why": "To compose request handling.",
+    "realWorld": "Auth middleware checks token before protected routes.",
+    "definition": "Middleware is a function that runs between request and response.",
+    "howItWorks": "Order matters. It can modify req/res, end response, or call next(). Error middleware has four args.",
+    "questions": [
+      "Middleware order?",
+      "next()?",
+      "Error middleware?",
+      "Auth middleware?"
+    ],
+    "mistakes": [
+      "Calling next after res.send",
+      "Wrong order of body parser/routes",
+      "Not centralizing errors"
+    ],
+    "code": "app.use(express.json());\napp.use(auth);\napp.get(\"/me\", handler);",
+    "memoryTrick": "Middleware is security + receptionist + clerk in a queue.",
+    "fastRevision": "Order is everything.",
+    "section": "Node.js and Express Interview Core",
+    "id": "express-middleware"
+  },
+  {
+    "title": "REST APIs",
+    "why": "To expose resources over HTTP.",
+    "realWorld": "GET /users/1, POST /orders.",
+    "definition": "REST uses HTTP methods/status codes to operate on resources.",
+    "howItWorks": "Design nouns for URLs, verbs via methods, status codes for outcomes, JSON body for data.",
+    "questions": [
+      "GET vs POST?",
+      "PUT vs PATCH?",
+      "Status codes?",
+      "Idempotency?"
+    ],
+    "mistakes": [
+      "Using 200 for every response",
+      "Verb-heavy URLs",
+      "No pagination/filtering"
+    ],
+    "code": "app.get(\"/users/:id\", async (req,res)=>res.json(user));",
+    "memoryTrick": "URL is noun, method is verb.",
+    "fastRevision": "Use correct methods/status codes.",
+    "section": "Node.js and Express Interview Core",
+    "id": "rest-apis"
+  },
+  {
+    "title": "Authentication, Error Handling, Rate Limiting, Security",
+    "why": "To protect APIs and keep them reliable.",
+    "realWorld": "Login sets cookie, API validates token, limiter blocks brute force.",
+    "definition": "Backend must validate identity, inputs, errors, and request volume.",
+    "howItWorks": "Use validation, auth middleware, centralized errors, rate limiting, CORS, helmet, logs, and secure secrets.",
+    "questions": [
+      "JWT flow?",
+      "CORS?",
+      "Rate limiting?",
+      "Global error handler?",
+      "Validation?"
+    ],
+    "mistakes": [
+      "Trusting frontend validation",
+      "Leaking stack traces",
+      "No rate limit on login",
+      "Hardcoded secrets"
+    ],
+    "code": "app.use((err,req,res,next)=>{\nres.status(err.status||500).json({message:\"Something went wrong\"});\n});",
+    "memoryTrick": "Backend is bouncer. Frontend is signboard.",
+    "fastRevision": "Never trust client input.",
+    "section": "Node.js and Express Interview Core",
+    "id": "authentication-error-handling-rate-limiting-security"
+  },
+  {
+    "title": "Documents and Collections",
+    "why": "To model flexible JSON-like data.",
+    "realWorld": "User document stores profile fields and preferences.",
+    "definition": "MongoDB stores BSON documents inside collections.",
+    "howItWorks": "Documents can have nested fields/arrays. Schema is flexible but app should still enforce structure.",
+    "questions": [
+      "Document vs collection?",
+      "BSON?",
+      "Flexible schema?",
+      "ObjectId?"
+    ],
+    "mistakes": [
+      "No schema discipline",
+      "Over-nesting huge arrays",
+      "Assuming MongoDB means no design"
+    ],
+    "code": "db.users.insertOne({name:\"A\", skills:[\"JS\",\"React\"]})",
+    "memoryTrick": "Mongo document = JSON with gym membership.",
+    "fastRevision": "Flexible does not mean careless.",
+    "section": "MongoDB Interview Core",
+    "id": "documents-and-collections"
+  },
+  {
+    "title": "CRUD Queries",
+    "why": "To create/read/update/delete documents.",
+    "realWorld": "Find active users, update order status.",
+    "definition": "CRUD is basic database operation set.",
+    "howItWorks": "Use find, insertOne, updateOne, deleteOne with filters/operators.",
+    "questions": [
+      "find vs findOne?",
+      "$set?",
+      "updateOne vs updateMany?",
+      "Projection?"
+    ],
+    "mistakes": [
+      "Replacing whole doc accidentally",
+      "No projection on large docs",
+      "Bad filters"
+    ],
+    "code": "db.users.updateOne({_id:id}, {$set:{active:true}})",
+    "memoryTrick": "$set is surgical update; replacement is bulldozer.",
+    "fastRevision": "Always think filter + projection.",
+    "section": "MongoDB Interview Core",
+    "id": "crud-queries"
+  },
+  {
+    "title": "Aggregation",
+    "why": "To transform and analyze data in pipeline stages.",
+    "realWorld": "Monthly revenue by category.",
+    "definition": "Aggregation pipeline processes documents through stages like $match, $group, $sort.",
+    "howItWorks": "Place $match early, project fields, group after filtering for performance.",
+    "questions": [
+      "Aggregation pipeline?",
+      "$match vs $group?",
+      "Lookup?",
+      "Performance?"
+    ],
+    "mistakes": [
+      "Grouping before filtering",
+      "Not using indexes before pipeline",
+      "Overusing aggregation for simple find"
+    ],
+    "code": "db.orders.aggregate([{$match:{status:\"paid\"}},{$group:{_id:\"$city\", total:{$sum:\"$amount\"}}}])",
+    "memoryTrick": "Aggregation is assembly line.",
+    "fastRevision": "Filter early, group later.",
+    "section": "MongoDB Interview Core",
+    "id": "aggregation"
+  },
+  {
+    "title": "Indexing and Performance",
+    "why": "To make queries fast.",
+    "realWorld": "Index email for login lookup.",
+    "definition": "Index is a data structure that speeds reads at write/storage cost.",
+    "howItWorks": "Indexes help filters/sorts when query matches index prefix/selectivity.",
+    "questions": [
+      "What is index?",
+      "Compound index?",
+      "Explain plan?",
+      "Trade-offs?"
+    ],
+    "mistakes": [
+      "Indexing every field",
+      "Ignoring write cost",
+      "Wrong field order in compound index"
+    ],
+    "code": "db.users.createIndex({email:1},{unique:true})",
+    "memoryTrick": "Index is book index: faster lookup, extra pages.",
+    "fastRevision": "High-cardinality queried fields are good index candidates.",
+    "section": "MongoDB Interview Core",
+    "id": "indexing-and-performance"
+  },
+  {
+    "title": "Embedding vs Referencing and Populate",
+    "why": "To model relationships.",
+    "realWorld": "Embed address; reference author in posts.",
+    "definition": "Embed stores related data together; reference stores ids to separate docs.",
+    "howItWorks": "Embed for one-to-few and read-together. Reference for many-to-many, large/changing data.",
+    "questions": [
+      "Embed vs reference?",
+      "populate?",
+      "Data modeling?",
+      "Many-to-many?"
+    ],
+    "mistakes": [
+      "Using populate everywhere",
+      "Huge growing arrays",
+      "Relational thinking blindly"
+    ],
+    "code": "Post.find().populate(\"author\")",
+    "memoryTrick": "Embed when family lives together; reference when they live in different cities.",
+    "fastRevision": "Model from query patterns.",
+    "section": "MongoDB Interview Core",
+    "id": "embedding-vs-referencing-and-populate"
+  },
+  {
+    "title": "Transactions",
+    "why": "To update multiple documents atomically.",
+    "realWorld": "Transfer wallet balance between users.",
+    "definition": "Transaction groups operations so they commit or rollback together.",
+    "howItWorks": "MongoDB supports multi-document transactions, but schema design should avoid unnecessary transactions when possible.",
+    "questions": [
+      "When need transaction?",
+      "ACID?",
+      "Session?",
+      "Performance cost?"
+    ],
+    "mistakes": [
+      "Using transactions for simple single doc update",
+      "Ignoring retry logic",
+      "Long transactions"
+    ],
+    "code": "const session = await mongoose.startSession();\nawait session.withTransaction(async()=>{/* updates */});",
+    "memoryTrick": "Transaction = all-or-nothing shaadi package.",
+    "fastRevision": "Use for true multi-doc consistency.",
+    "section": "MongoDB Interview Core",
+    "id": "transactions"
+  },
+  {
+    "title": "SELECT, WHERE, ORDER BY",
+    "why": "To retrieve filtered sorted data.",
+    "realWorld": "Find active users ordered by signup date.",
+    "definition": "SELECT chooses columns, WHERE filters rows, ORDER BY sorts results.",
+    "howItWorks": "SQL logical order: FROM/JOIN -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY -> LIMIT.",
+    "questions": [
+      "SQL execution order?",
+      "WHERE vs HAVING?",
+      "ORDER BY?",
+      "LIMIT?"
+    ],
+    "mistakes": [
+      "SELECT * in production APIs",
+      "Filtering after fetching in app",
+      "Forgetting NULL behavior"
+    ],
+    "code": "SELECT id, name FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10;",
+    "memoryTrick": "WHERE is entry gate before grouping.",
+    "fastRevision": "Know logical query order.",
+    "section": "SQL Interview Core",
+    "id": "select-where-order-by"
+  },
+  {
+    "title": "GROUP BY and HAVING",
+    "why": "To aggregate rows into groups.",
+    "realWorld": "Revenue per city, only cities above 1 lakh.",
+    "definition": "GROUP BY groups rows; HAVING filters groups.",
+    "howItWorks": "Aggregate functions include COUNT, SUM, AVG, MIN, MAX. HAVING runs after grouping.",
+    "questions": [
+      "GROUP BY rules?",
+      "WHERE vs HAVING?",
+      "COUNT(*) vs COUNT(col)?"
+    ],
+    "mistakes": [
+      "Using WHERE on aggregate",
+      "Selecting non-grouped columns",
+      "Miscounting NULL values"
+    ],
+    "code": "SELECT city, COUNT(*) FROM users GROUP BY city HAVING COUNT(*) > 10;",
+    "memoryTrick": "WHERE filters people before party; HAVING filters parties after headcount.",
+    "fastRevision": "WHERE before group, HAVING after group.",
+    "section": "SQL Interview Core",
+    "id": "group-by-and-having"
+  },
+  {
+    "title": "JOINs",
+    "why": "To combine related tables.",
+    "realWorld": "Users joined with orders.",
+    "definition": "JOIN combines rows from tables using matching keys.",
+    "howItWorks": "INNER returns matches; LEFT keeps left table even without match; RIGHT/FULL less common.",
+    "questions": [
+      "INNER vs LEFT?",
+      "Self join?",
+      "Many-to-many?",
+      "Join performance?"
+    ],
+    "mistakes": [
+      "Forgetting join condition",
+      "Turning LEFT into INNER with WHERE on right table",
+      "Duplicate rows surprise"
+    ],
+    "code": "SELECT u.name, o.total FROM users u LEFT JOIN orders o ON o.user_id = u.id;",
+    "memoryTrick": "JOIN is matrimony bureau for tables.",
+    "fastRevision": "LEFT JOIN keeps all left rows.",
+    "section": "SQL Interview Core",
+    "id": "joins"
+  },
+  {
+    "title": "Subqueries and CTEs",
+    "why": "To break complex logic into parts.",
+    "realWorld": "Find users whose order total is above average.",
+    "definition": "Subquery is query inside query; CTE names a temporary result with WITH.",
+    "howItWorks": "Use for readability; optimizer may inline/materialize depending DB.",
+    "questions": [
+      "Subquery vs join?",
+      "CTE?",
+      "Correlated subquery?",
+      "Performance?"
+    ],
+    "mistakes": [
+      "Over-nesting unreadable SQL",
+      "Correlated subquery on huge tables",
+      "Ignoring indexes"
+    ],
+    "code": "WITH totals AS (SELECT user_id, SUM(total) s FROM orders GROUP BY user_id) SELECT * FROM totals WHERE s>1000;",
+    "memoryTrick": "CTE is a named rough-work page.",
+    "fastRevision": "Use CTEs for clarity.",
+    "section": "SQL Interview Core",
+    "id": "subqueries-and-ctes"
+  },
+  {
+    "title": "Indexes, Normalization, Transactions, ACID",
+    "why": "To design reliable databases.",
+    "realWorld": "Unique email index; transaction for payment.",
+    "definition": "Index speeds lookup; normalization reduces duplication; ACID guarantees reliable transactions.",
+    "howItWorks": "ACID = Atomicity, Consistency, Isolation, Durability. Transactions protect multi-step changes.",
+    "questions": [
+      "What is ACID?",
+      "Normalization forms?",
+      "Index trade-offs?",
+      "Deadlock?"
+    ],
+    "mistakes": [
+      "Indexing every column",
+      "No transaction around payments",
+      "Over-normalizing small apps"
+    ],
+    "code": "BEGIN; UPDATE accounts SET balance=balance-100 WHERE id=1; UPDATE accounts SET balance=balance+100 WHERE id=2;\nCOMMIT;",
+    "memoryTrick": "ACID = bank should not say maybe.",
+    "fastRevision": "Transactions for money/inventory/critical consistency.",
+    "section": "SQL Interview Core",
+    "id": "indexes-normalization-transactions-acid"
+  },
+  {
+    "title": "Firebase",
+    "why": "To build apps quickly with managed backend services.",
+    "realWorld": "Chat app with Firebase Auth, Firestore, Storage, Hosting.",
+    "definition": "Firebase is Google-backed backend platform for auth, databases, hosting, functions, storage.",
+    "howItWorks": "Client SDKs connect to services; security rules protect database/storage; server SDKs handle admin tasks.",
+    "questions": [
+      "Firestore vs Realtime DB?",
+      "Security rules?",
+      "Firebase Auth?",
+      "Pricing?",
+      "When not use?"
+    ],
+    "mistakes": [
+      "Weak security rules",
+      "Too many reads causing cost",
+      "No data modeling plan"
+    ],
+    "code": "import { getAuth } from \"firebase/auth\";",
+    "memoryTrick": "Firebase is startup booster rocket. Great speed, but watch fuel meter.",
+    "fastRevision": "Great for MVP/mobile, realtime, Google ecosystem.",
+    "section": "Firebase vs Supabase",
+    "id": "firebase"
+  },
+  {
+    "title": "Supabase",
+    "why": "To build Postgres-backed apps with managed auth/realtime/storage.",
+    "realWorld": "SaaS dashboard with relational data and SQL queries.",
+    "definition": "Supabase is an open-source Firebase alternative built around Postgres.",
+    "howItWorks": "It exposes database, auth, storage, edge functions, realtime, and row-level security policies.",
+    "questions": [
+      "Why Supabase?",
+      "RLS?",
+      "SQL benefits?",
+      "Realtime?",
+      "Self-hosting?"
+    ],
+    "mistakes": [
+      "Disabling RLS carelessly",
+      "Writing unsafe policies",
+      "Treating it like NoSQL"
+    ],
+    "code": "const { data } = await supabase.from(\"users\").select(\"*\");",
+    "memoryTrick": "Supabase = Firebase but SQL wali feeling.",
+    "fastRevision": "Great when relational data and SQL are important.",
+    "section": "Firebase vs Supabase",
+    "id": "supabase"
+  },
+  {
+    "title": "Python Data Structures",
+    "why": "To choose the right container.",
+    "realWorld": "List for ordered tasks, set for unique tags, dict for lookup.",
+    "definition": "List ordered mutable; tuple ordered immutable; set unique; dict key-value.",
+    "howItWorks": "Choose by access pattern: order, uniqueness, lookup, immutability.",
+    "questions": [
+      "List vs tuple?",
+      "Set use?",
+      "Dict complexity?",
+      "Mutable default arg?"
+    ],
+    "mistakes": [
+      "Using list for membership at scale",
+      "Mutable default arguments",
+      "Confusing shallow/deep copy"
+    ],
+    "code": "seen=set(); counts={\"js\":3}; nums=[1,2]; point=(1,2)",
+    "memoryTrick": "List queue, tuple sealed lunchbox, set bouncer, dict phonebook.",
+    "fastRevision": "Know syntax and use cases.",
+    "section": "Python Interview Core",
+    "id": "python-data-structures"
+  },
+  {
+    "title": "Python OOP",
+    "why": "To bundle data and behavior.",
+    "realWorld": "User class with methods for permissions.",
+    "definition": "Class creates objects with attributes and methods.",
+    "howItWorks": "__init__ initializes instance. self refers to instance. Inheritance shares behavior.",
+    "questions": [
+      "self?",
+      "__init__?",
+      "Class vs object?",
+      "Inheritance vs composition?"
+    ],
+    "mistakes": [
+      "Forgetting self",
+      "Using class variables accidentally",
+      "Overusing inheritance"
+    ],
+    "code": "class User:\ndef __init__(self,name): self.name=name\ndef hello(self): return self.name",
+    "memoryTrick": "self is the object saying mera data.",
+    "fastRevision": "Explain class/object clearly.",
+    "section": "Python Interview Core",
+    "id": "python-oop"
+  },
+  {
+    "title": "Decorators, Generators, Iterators",
+    "why": "To write reusable wrappers and memory-efficient iteration.",
+    "realWorld": "Decorator checks auth; generator streams rows.",
+    "definition": "Decorator wraps function; iterator yields next values; generator creates iterator with yield.",
+    "howItWorks": "Decorators take function and return function. Generators pause/resume producing values lazily.",
+    "questions": [
+      "What is decorator?",
+      "yield?",
+      "Iterator protocol?",
+      "Generator vs list?"
+    ],
+    "mistakes": [
+      "Calling decorator wrongly",
+      "Returning list instead of yielding",
+      "Not understanding lazy eval"
+    ],
+    "code": "def log(fn):\ndef wrap(*a,**k): print(\"call\"); return fn(*a,**k)\nreturn wrap",
+    "memoryTrick": "Decorator = function jacket; generator = lazy snack dispenser.",
+    "fastRevision": "Very common Python interview area.",
+    "section": "Python Interview Core",
+    "id": "decorators-generators-iterators"
+  },
+  {
+    "title": "Comprehensions, Exceptions, Modules",
+    "why": "To write concise, safe, organized Python.",
+    "realWorld": "[x*x for x in nums if x>0]; try DB call except error.",
+    "definition": "Comprehensions build collections; exceptions handle failures; modules organize code.",
+    "howItWorks": "Use try/except around expected failures, finally for cleanup, modules for reuse.",
+    "questions": [
+      "List comprehension?",
+      "try/except/finally?",
+      "Import?",
+      "Custom exception?"
+    ],
+    "mistakes": [
+      "Catching bare except",
+      "Over-complicated comprehensions",
+      "Circular imports"
+    ],
+    "code": "squares=[n*n for n in nums if n>0]\ntry: risky()\nexcept ValueError as e: print(e)",
+    "memoryTrick": "Exception handling is seatbelt, not driving style.",
+    "fastRevision": "Catch specific exceptions.",
+    "section": "Python Interview Core",
+    "id": "comprehensions-exceptions-modules"
+  },
+  {
+    "title": "Git Core",
+    "why": "To track code changes safely.",
+    "realWorld": "Feature branch, commits, merge PR to main.",
+    "definition": "Git is distributed version control.",
+    "howItWorks": "Working tree -> staging area -> commit history. Branches are pointers to commits.",
+    "questions": [
+      "git fetch vs pull?",
+      "merge vs rebase?",
+      "reset vs revert?",
+      "stash?",
+      "conflict?"
+    ],
+    "mistakes": [
+      "Committing secrets",
+      "Force pushing shared branch",
+      "Huge unreviewable commits"
+    ],
+    "code": "git checkout -b feature/login\ngit add .\ngit commit -m \"Add login API\"\ngit push origin feature/login",
+    "memoryTrick": "Git is time machine; GitHub is collaboration office.",
+    "fastRevision": "Small commits, clear PRs, no secrets.",
+    "section": "Git, GitHub and Developer Workflow",
+    "id": "git-core"
+  },
+  {
+    "title": "GitHub Pull Requests",
+    "why": "To review and merge code collaboratively.",
+    "realWorld": "Open PR from feature branch to main.",
+    "definition": "PR proposes code changes for review before merge.",
+    "howItWorks": "CI checks, reviews, comments, and merge strategies protect main branch.",
+    "questions": [
+      "What is PR?",
+      "Squash vs merge?",
+      "CI?",
+      "Code review etiquette?"
+    ],
+    "mistakes": [
+      "Huge PRs",
+      "No description/screenshots",
+      "Ignoring failing checks"
+    ],
+    "code": "PR title: Add JWT refresh flow\nDescription: what changed, tests, screenshots, risks.",
+    "memoryTrick": "PR is not just code upload; it is communication.",
+    "fastRevision": "Good PRs explain why, not just what.",
+    "section": "Git, GitHub and Developer Workflow",
+    "id": "github-pull-requests"
+  },
+  {
+    "title": "JWT",
+    "why": "To carry signed claims between client and server.",
+    "realWorld": "After login, server issues token; API verifies signature.",
+    "definition": "JWT is a signed token containing claims.",
+    "howItWorks": "Header + payload + signature. Server verifies signature and expiry; do not put secrets in payload.",
+    "questions": [
+      "JWT flow?",
+      "Access vs refresh?",
+      "Where store JWT?",
+      "Can JWT be revoked?",
+      "JWT vs session?"
+    ],
+    "mistakes": [
+      "Storing sensitive data in JWT",
+      "No expiry",
+      "localStorage XSS risk",
+      "Using none algorithm"
+    ],
+    "code": "jwt.sign({sub:user.id}, secret, {expiresIn:\"15m\"});",
+    "memoryTrick": "JWT is movie ticket: checker validates ticket, does not call your home.",
+    "fastRevision": "Short-lived access token + refresh strategy.",
+    "section": "Authentication Survival Guide",
+    "id": "jwt"
+  },
+  {
+    "title": "Cookies and Sessions",
+    "why": "To keep authenticated state across requests.",
+    "realWorld": "Server creates session id, browser sends cookie each request.",
+    "definition": "Cookie stores small client data; session stores user state server-side or in session store.",
+    "howItWorks": "HttpOnly prevents JS access, Secure requires HTTPS, SameSite reduces CSRF.",
+    "questions": [
+      "Cookie flags?",
+      "Session vs JWT?",
+      "CSRF?",
+      "HttpOnly?"
+    ],
+    "mistakes": [
+      "No HttpOnly/Secure",
+      "Session stored in memory only",
+      "Bad SameSite config"
+    ],
+    "code": "Set-Cookie: sid=abc; HttpOnly; Secure; SameSite=Lax",
+    "memoryTrick": "Cookie is passport automatically shown at gate.",
+    "fastRevision": "For web auth, secure cookies are usually strong choice.",
+    "section": "Authentication Survival Guide",
+    "id": "cookies-and-sessions"
+  },
+  {
+    "title": "Refresh Tokens and OAuth",
+    "why": "To keep users logged in and allow third-party login.",
+    "realWorld": "Google Login redirects user, app gets identity, creates local session.",
+    "definition": "Refresh token gets new access token; OAuth delegates authorization to provider.",
+    "howItWorks": "Use secure redirect URIs, state/PKCE, token rotation, and server-side validation.",
+    "questions": [
+      "OAuth flow?",
+      "Access vs refresh?",
+      "Google login?",
+      "PKCE?",
+      "Token rotation?"
+    ],
+    "mistakes": [
+      "Confusing authentication and authorization",
+      "Putting refresh token in unsafe storage",
+      "No state parameter"
+    ],
+    "code": "POST /auth/refresh -> verify refresh token -> issue new access token",
+    "memoryTrick": "Access token = day pass; refresh token = membership card.",
+    "fastRevision": "Protect refresh token more than access token.",
+    "section": "Authentication Survival Guide",
+    "id": "refresh-tokens-and-oauth"
+  },
+  {
+    "title": "Web Security Basics",
+    "why": "To stop common attacks.",
+    "realWorld": "Prevent XSS in comments, SQL injection in login, CSRF on payments.",
+    "definition": "Security is validating input, protecting sessions, limiting access, and reducing attack surface.",
+    "howItWorks": "Use parameterized queries, escaping, CSP, secure cookies, CSRF protections, rate limits, HTTPS, secrets management.",
+    "questions": [
+      "XSS?",
+      "CSRF?",
+      "SQL injection?",
+      "CORS?",
+      "Rate limiting?"
+    ],
+    "mistakes": [
+      "Trusting frontend validation",
+      "Building SQL strings",
+      "Wide open CORS",
+      "Leaking env vars"
+    ],
+    "code": "app.use(helmet());\napp.use(rateLimit({ windowMs: 60000, max: 100 }));",
+    "memoryTrick": "Security is not one lock; it is building design.",
+    "fastRevision": "Validate, escape, authorize, log, limit.",
+    "section": "Web Security and Deployment Basics",
+    "id": "web-security-basics"
+  },
+  {
+    "title": "Deployment Basics",
+    "why": "To ship app reliably.",
+    "realWorld": "Deploy Next frontend to Vercel, API to Render/Fly, DB to managed Mongo/Postgres.",
+    "definition": "Deployment moves code to production infrastructure.",
+    "howItWorks": "Build app, set env vars, connect DB, run migrations, monitor logs, use HTTPS and domain/DNS.",
+    "questions": [
+      "Build vs runtime?",
+      "Env vars?",
+      "CI/CD?",
+      "Docker?",
+      "Rollback?"
+    ],
+    "mistakes": [
+      "Secrets in repo",
+      "Different local/prod env",
+      "No health check/logs",
+      "No migration plan"
+    ],
+    "code": "npm run build\n# set DATABASE_URL, JWT_SECRET in platform env",
+    "memoryTrick": "It works on my machine is not deployment strategy.",
+    "fastRevision": "Production = env vars + logs + rollback + monitoring.",
+    "section": "Web Security and Deployment Basics",
+    "id": "deployment-basics"
+  },
+  {
+    "title": "Load Balancer and Horizontal Scaling",
+    "why": "To handle more users reliably.",
+    "realWorld": "Traffic distributed across multiple Node servers.",
+    "definition": "Load balancer routes requests to healthy backend instances.",
+    "howItWorks": "Horizontal scaling adds machines; vertical scaling makes one machine bigger.",
+    "questions": [
+      "Horizontal vs vertical?",
+      "Load balancer?",
+      "Health checks?",
+      "Sticky sessions?"
+    ],
+    "mistakes": [
+      "Storing session only in one server memory",
+      "No health checks",
+      "Scaling DB last minute"
+    ],
+    "code": "",
+    "memoryTrick": "Load balancer is traffic police.",
+    "fastRevision": "Stateless servers scale easier.",
+    "section": "System Design Basics for Full Stack",
+    "id": "load-balancer-and-horizontal-scaling"
+  },
+  {
+    "title": "CDN and Caching",
+    "why": "To reduce latency and backend load.",
+    "realWorld": "Images/JS served from nearby CDN; API result cached in Redis.",
+    "definition": "CDN caches static assets globally; cache stores reusable responses/data.",
+    "howItWorks": "Set cache headers, TTL, invalidation rules, and use Redis for hot data/session/rate-limit counters.",
+    "questions": [
+      "CDN?",
+      "Cache invalidation?",
+      "Redis?",
+      "TTL?"
+    ],
+    "mistakes": [
+      "Caching private data publicly",
+      "No invalidation strategy",
+      "Stale data surprises"
+    ],
+    "code": "",
+    "memoryTrick": "Cache is fridge: fast food, expiry needed.",
+    "fastRevision": "Cache public/static safely; protect private data.",
+    "section": "System Design Basics for Full Stack",
+    "id": "cdn-and-caching"
+  },
+  {
+    "title": "Database Scaling",
+    "why": "To support growing data and traffic.",
+    "realWorld": "Add indexes, read replicas, sharding, partitioning.",
+    "definition": "DB scaling improves capacity, reads, writes, and latency.",
+    "howItWorks": "Start with schema/index/query optimization, then replicas, partitioning/sharding, queues, denormalization.",
+    "questions": [
+      "Read replica?",
+      "Sharding?",
+      "Index?",
+      "CAP basics?",
+      "SQL vs NoSQL?"
+    ],
+    "mistakes": [
+      "Sharding too early",
+      "No indexes",
+      "N+1 queries",
+      "Ignoring backups"
+    ],
+    "code": "",
+    "memoryTrick": "Database is often the real boss fight.",
+    "fastRevision": "Optimize queries before throwing servers.",
+    "section": "System Design Basics for Full Stack",
+    "id": "database-scaling"
+  },
+  {
+    "title": "Monolith, Microservices, Queues",
+    "why": "To organize backend complexity.",
+    "realWorld": "Email sending through queue; payments as separate service later.",
+    "definition": "Monolith is one deployable app; microservices split services; queue processes async work.",
+    "howItWorks": "Monolith is simpler initially. Microservices help independent scaling but add network/devops complexity. Queues decouple slow work.",
+    "questions": [
+      "Monolith vs microservices?",
+      "Why queue?",
+      "Kafka/RabbitMQ?",
+      "Async processing?"
+    ],
+    "mistakes": [
+      "Microservices for tiny apps",
+      "No idempotency in queue jobs",
+      "Ignoring retries/dead letters"
+    ],
+    "code": "",
+    "memoryTrick": "Queue is waiting room for background tasks.",
+    "fastRevision": "Start monolith; split only with clear pain.",
+    "section": "System Design Basics for Full Stack",
+    "id": "monolith-microservices-queues"
+  }
+]
