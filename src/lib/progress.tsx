@@ -24,7 +24,9 @@ export interface TestResult {
 
 export interface Progress {
   coding: Record<string, "solved" | "attempted">;
+  complexity: Record<string, { time: string; space: string }>;
   dsaSeen: Record<string, boolean>;
+  interviewSeen: Record<string, boolean>;
   bookmarks: Record<string, boolean>;
   apti: Record<string, { attempted: number; correct: number }>;
   tests: TestResult[];
@@ -33,7 +35,9 @@ export interface Progress {
 
 const EMPTY: Progress = {
   coding: {},
+  complexity: {},
   dsaSeen: {},
+  interviewSeen: {},
   bookmarks: {},
   apti: {},
   tests: [],
@@ -43,7 +47,9 @@ interface ProgressAPI {
   progress: Progress;
   ready: boolean;
   markCoding: (id: string, status: "solved" | "attempted") => void;
+  recordComplexity: (id: string, c: { time: string; space: string }) => void;
   markDsaSeen: (id: string) => void;
+  markInterviewSeen: (id: string, seen?: boolean) => void;
   toggleBookmark: (key: string) => void;
   isBookmarked: (key: string) => boolean;
   recordApti: (topicId: string, correct: boolean) => void;
@@ -68,7 +74,9 @@ function mergeProgress(a: Progress, b: Progress): Progress {
   }
   return {
     coding: { ...a.coding, ...b.coding },
+    complexity: { ...a.complexity, ...b.complexity },
     dsaSeen: { ...a.dsaSeen, ...b.dsaSeen },
+    interviewSeen: { ...a.interviewSeen, ...b.interviewSeen },
     bookmarks: { ...a.bookmarks, ...b.bookmarks },
     apti,
     tests: [...a.tests, ...b.tests].sort((x, y) => y.ts - x.ts).slice(0, 100),
@@ -175,8 +183,20 @@ export function ProgressProvider({
         },
         streak: status === "solved" ? bumpStreak(p) : p.streak,
       })),
+    recordComplexity: (id, c) =>
+      update((p) => ({
+        ...p,
+        complexity: { ...p.complexity, [id]: c },
+      })),
     markDsaSeen: (id) =>
       update((p) => ({ ...p, dsaSeen: { ...p.dsaSeen, [id]: true } })),
+    markInterviewSeen: (id, seen = true) =>
+      update((p) => {
+        const interviewSeen = { ...p.interviewSeen };
+        if (seen) interviewSeen[id] = true;
+        else delete interviewSeen[id];
+        return { ...p, interviewSeen };
+      }),
     toggleBookmark: (key) =>
       update((p) => {
         const bookmarks = { ...p.bookmarks };

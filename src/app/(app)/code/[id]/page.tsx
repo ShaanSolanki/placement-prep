@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import {
   ArrowLeft,
@@ -19,6 +19,7 @@ import {
   ChevronRight,
   PartyPopper,
   Gauge,
+  Timer,
 } from "lucide-react";
 import {
   codingById,
@@ -27,16 +28,32 @@ import {
   difficultyClass,
   type CodingProblem,
 } from "@/lib/content";
-import { runTests, type RunSummary } from "@/lib/pyodide";
-import { analyzeComplexity, type ComplexityEstimate } from "@/lib/complexity";
+import {
+  runTests,
+  isPyodideReady,
+  preloadPyodide,
+  type RunSummary,
+} from "@/lib/pyodide";
+import {
+  analyzeComplexity,
+  gradeComplexity,
+  type ComplexityEstimate,
+  type ComplexityVerdict,
+} from "@/lib/complexity";
 import { useProgress } from "@/lib/progress";
 
 export default function SolvePage() {
   const params = useParams<{ id: string }>();
   const problem = codingById(params.id);
-  const { markCoding, progress } = useProgress();
+  const { markCoding, recordComplexity, progress } = useProgress();
   const { index, list, prev, next } = codingSiblings(params.id);
   const alreadySolved = progress.coding[params.id] === "solved";
+  // optimal complexity derived from the verified reference solution
+  const optimal = useMemo(
+    () => (problem ? analyzeComplexity(problem.solution) : null),
+    [problem]
+  );
+  const savedComplexity = problem ? progress.complexity[problem.id] : undefined;
 
   const [code, setCode] = useState("");
   const [summary, setSummary] = useState<RunSummary | null>(null);
@@ -94,23 +111,34 @@ export default function SolvePage() {
       if (!problem) return;
       setRunning(kind);
       setTab("result");
-      if (!window.__apexPyodide) setBooting(true);
+      if (!isPyodideReady()) setBooting(true);
       const tests = kind === "run" ? problem.tests.slice(0, 2) : problem.tests;
       try {
         const result = await runTests(code, problem, tests);
         setSummary(result);
-        setAnalysis(analyzeComplexity(code));
+        const mine = analyzeComplexity(code);
+        setAnalysis(mine);
         if (kind === "submit") {
-          if (result.allPassed) markCoding(problem.id, "solved");
-          else markCoding(problem.id, "attempted");
+          if (result.allPassed) {
+            markCoding(problem.id, "solved");
+            // persist the accepted solution's complexity (LeetCode-style record)
+            recordComplexity(problem.id, { time: mine.time, space: mine.space });
+          } else {
+            markCoding(problem.id, "attempted");
+          }
         }
       } finally {
         setRunning(false);
         setBooting(false);
       }
     },
-    [code, problem, markCoding]
+    [code, problem, markCoding, recordComplexity]
   );
+
+  // warm the Python runtime in the background so the first Run isn't slow
+  useEffect(() => {
+    preloadPyodide();
+  }, []);
 
   // keyboard shortcuts: Ctrl/Cmd+Enter = Run, +Shift = Submit
   useEffect(() => {
@@ -234,6 +262,15 @@ export default function SolvePage() {
             <span className={`pill ${difficultyClass(problem.difficulty)}`}>
               {problem.difficulty}
             </span>
+            {savedComplexity && (
+              <span
+                className="pill border border-olive/40 bg-olive/10 text-olive inline-flex items-center gap-1"
+                title="Complexity of your accepted solution"
+              >
+                <Gauge size={11} /> {savedComplexity.time} ·{" "}
+                {savedComplexity.space}
+              </span>
+            )}
           </div>
 
           <p className="text-bone leading-relaxed whitespace-pre-line">
@@ -406,6 +443,7 @@ export default function SolvePage() {
                   booting={booting}
                   next={next}
                   analysis={analysis}
+                  optimal={optimal}
                 />
               )}
             </div>
@@ -416,26 +454,88 @@ export default function SolvePage() {
   );
 }
 
-function ComplexityCard({ analysis }: { analysis: ComplexityEstimate }) {
+const VERDICT_META: Record<
+  ComplexityVerdict,
+  { label: string; cls: string }
+> = {
+  optimal: { label: "Optimal", cls: "text-olive border-olive/40 bg-olive/10" },
+  close: {
+    label: "Near-optimal",
+    cls: "text-amber border-amber/40 bg-amber/10",
+  },
+  improve: {
+    label: "Can be improved",
+    cls: "text-rust border-rust/40 bg-rust/10",
+  },
+};
+
+function StatTile({
+  label,
+  value,
+  optimal,
+}: {
+  label: string;
+  value: string;
+  optimal?: string;
+}) {
+  return (
+    <div className="flex-1 surface-2 rounded-lg px-3 py-2 border border-line">
+      <div className="text-[10px] uppercase tracking-wider text-bone-faint">
+        {label}
+      </div>
+      <div className="text-base font-display text-bone leading-tight mt-0.5">
+        {value}
+      </div>
+      {optimal && (
+        <div className="text-[10px] text-bone-faint mt-0.5">
+          optimal {optimal}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ComplexityCard({
+  analysis,
+  optimal,
+}: {
+  analysis: ComplexityEstimate;
+  optimal?: ComplexityEstimate | null;
+}) {
+  const verdict = optimal ? gradeComplexity(analysis, optimal) : null;
+  const meta = verdict ? VERDICT_META[verdict] : null;
   return (
     <div className="surface-2 p-3 mb-2 border border-slate/25">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <span className="text-bone-faint flex items-center gap-1.5">
-          <Gauge size={13} className="text-slate" /> Your solution · estimated
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <span className="text-bone-faint flex items-center gap-1.5 text-xs">
+          <Gauge size={13} className="text-slate" /> Complexity analysis
         </span>
-        <div className="flex items-center gap-4">
-          <span>
-            <span className="text-bone-faint">Time </span>
-            <span className="text-slate font-medium">{analysis.time}</span>
+        {meta && (
+          <span
+            className={`pill border ${meta.cls} text-[11px] font-medium`}
+          >
+            {meta.label}
           </span>
-          <span>
-            <span className="text-bone-faint">Space </span>
-            <span className="text-slate font-medium">{analysis.space}</span>
-          </span>
-        </div>
+        )}
       </div>
-      <p className="text-bone-faint mt-1.5 leading-relaxed">
-        {analysis.note} <span className="opacity-70">Estimate from code structure — verify by reasoning.</span>
+      <div className="flex gap-2">
+        <StatTile
+          label="Time"
+          value={analysis.time}
+          optimal={optimal?.time}
+        />
+        <StatTile
+          label="Space"
+          value={analysis.space}
+          optimal={optimal?.space}
+        />
+      </div>
+      <p className="text-bone-faint mt-2 leading-relaxed text-[11px]">
+        {analysis.note}{" "}
+        <span className="opacity-70">
+          Your solution is estimated from code structure; “optimal” is the
+          reference solution’s complexity.
+        </span>
       </p>
     </div>
   );
@@ -447,12 +547,14 @@ function ResultView({
   booting,
   next,
   analysis,
+  optimal,
 }: {
   summary: RunSummary | null;
   running: boolean;
   booting: boolean;
   next?: CodingProblem;
   analysis?: ComplexityEstimate | null;
+  optimal?: ComplexityEstimate | null;
 }) {
   if (running) {
     return (
@@ -474,7 +576,10 @@ function ResultView({
     return (
       <div>
         <div className="flex items-center gap-1.5 text-rust mb-2">
-          <XCircle size={14} /> Your code raised an error
+          {summary.timedOut ? <Timer size={14} /> : <XCircle size={14} />}{" "}
+          {summary.timedOut
+            ? "Time Limit Exceeded"
+            : "Your code raised an error"}
         </div>
         <pre className="text-rust whitespace-pre-wrap bg-rust/10 border border-rust/20 rounded-lg p-3">
           {summary.runtimeError}
@@ -484,7 +589,7 @@ function ResultView({
   }
   return (
     <div className="space-y-2">
-      {analysis && <ComplexityCard analysis={analysis} />}
+      {analysis && <ComplexityCard analysis={analysis} optimal={optimal} />}
       {summary.allPassed && (
         <div className="surface-2 border border-olive/30 bg-olive/5 rounded-lg p-3 mb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-olive">

@@ -197,6 +197,19 @@ export function interviewBySection(section: string) {
 export function interviewById(id: string) {
   return interviewConcepts.find((c) => c.id === id);
 }
+// neighbours within the same section, for prev/next study navigation
+export function interviewSiblings(id: string) {
+  const cur = interviewById(id);
+  if (!cur) return { list: [], index: -1, prev: undefined, next: undefined };
+  const list = interviewBySection(cur.section);
+  const index = list.findIndex((c) => c.id === id);
+  return {
+    list,
+    index,
+    prev: index > 0 ? list[index - 1] : undefined,
+    next: index >= 0 && index < list.length - 1 ? list[index + 1] : undefined,
+  };
+}
 
 // ---- shared ----
 export function difficultyClass(d: string) {

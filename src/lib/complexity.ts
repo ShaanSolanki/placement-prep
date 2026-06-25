@@ -16,6 +16,28 @@ const rankOf = (l: string) => {
 };
 const maxLabel = (a: string, b: string) => (rankOf(a) >= rankOf(b) ? a : b);
 
+/** Ordinal rank of a Big-O label (higher = slower). Exposed for comparisons. */
+export function complexityRank(label: string): number {
+  return rankOf(label);
+}
+
+export type ComplexityVerdict = "optimal" | "close" | "improve";
+
+/**
+ * Compare a user's estimate against the optimal (reference) complexity.
+ * `time` is weighted more heavily than `space`, like a typical judge.
+ */
+export function gradeComplexity(
+  mine: ComplexityEstimate,
+  optimal: ComplexityEstimate
+): ComplexityVerdict {
+  const dt = rankOf(mine.time) - rankOf(optimal.time);
+  const ds = rankOf(mine.space) - rankOf(optimal.space);
+  if (dt <= 0 && ds <= 0) return "optimal";
+  if (dt <= 1 && ds <= 1) return "close";
+  return "improve";
+}
+
 export function analyzeComplexity(code: string): ComplexityEstimate {
   const lines = code.split("\n").map((l) => l.replace(/#.*$/, ""));
   const flat = lines.join("\n");
@@ -80,6 +102,8 @@ export function analyzeComplexity(code: string): ComplexityEstimate {
     );
 
   const hasSort = /\bsorted\s*\(|\.sort\s*\(/.test(flat);
+  // heap operations are O(log n) each; inside a single loop → O(n log n)
+  const usesHeap = /heapq\.|heappush|heappop|heapify/.test(flat);
 
   // ---- TIME ----
   let time: string;
@@ -107,6 +131,8 @@ export function analyzeComplexity(code: string): ComplexityEstimate {
         ? "O(n²)"
         : "O(n³)";
     if (hasSort) time = maxLabel(time, "O(n log n)");
+    // a heap touched inside (at least) one loop pushes an O(n) pass to O(n log n)
+    if (usesHeap && depth >= 1) time = maxLabel(time, "O(n log n)");
     if (selfCalls === 1 && logLoop) time = maxLabel(time, "O(log n)");
     if (selfCalls >= 1 && depth >= 1) time = maxLabel(time, "O(n)");
   }
@@ -137,6 +163,7 @@ export function analyzeComplexity(code: string): ComplexityEstimate {
   if (traversal) feats.push("BFS/DFS traversal");
   if (amortised) feats.push("two-pointer / sliding window");
   if (hasSort) feats.push("sorting");
+  if (usesHeap) feats.push("heap / priority queue");
   const note = feats.length
     ? `Detected: ${feats.join(", ")}.`
     : "Constant-time operations only.";

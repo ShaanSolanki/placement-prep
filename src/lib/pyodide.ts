@@ -5,6 +5,11 @@ import type { CodingProblem } from "./content";
 const PYODIDE_VERSION = "0.27.7";
 const CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 
+// Hard ceiling for a single run. If user code doesn't finish in time we assume
+// an infinite loop (or runaway complexity) and kill the worker — the UI thread
+// is never blocked because all Python executes off the main thread.
+const TIME_LIMIT_MS = 8000;
+
 export interface TestRunResult {
   ok: boolean;
   got: unknown;
@@ -20,46 +25,10 @@ export interface RunSummary {
   total: number;
   allPassed: boolean;
   runtimeError: string | null;
+  timedOut?: boolean;
 }
 
-interface PyodideInterface {
-  runPythonAsync: (code: string) => Promise<unknown>;
-  globals: { set: (k: string, v: unknown) => void };
-}
-
-declare global {
-  interface Window {
-    loadPyodide?: (opts: { indexURL: string }) => Promise<PyodideInterface>;
-    __apexPyodide?: Promise<PyodideInterface>;
-  }
-}
-
-function loadScript(src: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) return resolve();
-    const s = document.createElement("script");
-    s.src = src;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Pyodide runtime"));
-    document.head.appendChild(s);
-  });
-}
-
-export async function getPyodide(): Promise<PyodideInterface> {
-  if (typeof window === "undefined") throw new Error("Pyodide is browser-only");
-  if (window.__apexPyodide) return window.__apexPyodide;
-  window.__apexPyodide = (async () => {
-    await loadScript(`${CDN}pyodide.js`);
-    if (!window.loadPyodide) throw new Error("Pyodide failed to initialise");
-    return window.loadPyodide({ indexURL: CDN });
-  })();
-  return window.__apexPyodide;
-}
-
-export function isPyodideReady() {
-  return typeof window !== "undefined" && !!window.__apexPyodide;
-}
-
+// ---- Python harness (runs inside the worker) ----
 const HARNESS = `
 import json, copy, io, contextlib
 
@@ -165,32 +134,186 @@ def __apex_run(tests_json, func_name, mode, argtypes_json, rettype):
     return json.dumps(out, default=str)
 `;
 
+// ---- Worker source (classic worker built from a Blob, so it works the same in
+// dev and production regardless of the bundler) ----
+const WORKER_SRC = `
+const CDN = ${JSON.stringify(CDN)};
+const HARNESS = ${JSON.stringify(HARNESS)};
+let pyReady = null;
+function getPy() {
+  if (pyReady) return pyReady;
+  pyReady = (async () => {
+    importScripts(CDN + "pyodide.js");
+    const py = await loadPyodide({ indexURL: CDN });
+    self.postMessage({ type: "ready" });
+    return py;
+  })();
+  return pyReady;
+}
+self.onmessage = async (e) => {
+  const d = e.data || {};
+  if (d.type === "warm") { getPy(); return; }
+  if (d.type !== "run") return;
+  try {
+    const py = await getPy();
+    await py.runPythonAsync(HARNESS);
+    py.globals.set("__apex_user_code", d.code);
+    await py.runPythonAsync("exec(__apex_user_code, globals())");
+    py.globals.set("__apex_tests_json", JSON.stringify(d.tests));
+    py.globals.set("__apex_func", d.funcName);
+    py.globals.set("__apex_mode", d.mode);
+    py.globals.set("__apex_argtypes", JSON.stringify(d.argTypes));
+    py.globals.set("__apex_rettype", d.retType);
+    const raw = await py.runPythonAsync(
+      "__apex_run(__apex_tests_json, __apex_func, __apex_mode, __apex_argtypes, __apex_rettype)"
+    );
+    self.postMessage({ id: d.id, ok: true, raw: raw });
+  } catch (err) {
+    self.postMessage({ id: d.id, ok: false, error: String((err && err.message) || err) });
+  }
+};
+`;
+
+let worker: Worker | null = null;
+let booted = false;
+let msgId = 0;
+
+function getWorker(): Worker {
+  if (worker) return worker;
+  const blob = new Blob([WORKER_SRC], { type: "text/javascript" });
+  worker = new Worker(URL.createObjectURL(blob));
+  booted = false;
+  worker.addEventListener("message", (e: MessageEvent) => {
+    if ((e.data as { type?: string })?.type === "ready") booted = true;
+  });
+  return worker;
+}
+
+function killWorker() {
+  if (worker) {
+    worker.terminate();
+    worker = null;
+    booted = false;
+  }
+}
+
+export function isPyodideReady() {
+  return booted;
+}
+
+/** Warm the runtime ahead of the first Run so booting isn't on the critical path. */
+export function preloadPyodide() {
+  if (typeof window === "undefined") return;
+  const w = getWorker();
+  // a no-op run that just triggers pyodide load inside the worker
+  w.postMessage({ type: "warm" });
+}
+
+function cleanTraceback(msg: string): string {
+  return (
+    msg
+      .split("\n")
+      .filter(
+        (l) =>
+          l.trim() &&
+          !l.includes("pyodide") &&
+          !l.includes('File "<exec>"') &&
+          !l.includes("__apex")
+      )
+      .slice(-6)
+      .join("\n") || msg
+  );
+}
+
 export async function runTests(
   userCode: string,
   problem: CodingProblem,
   tests: { input: unknown[]; expected: unknown }[]
 ): Promise<RunSummary> {
-  const py = await getPyodide();
+  if (typeof window === "undefined")
+    throw new Error("Pyodide is browser-only");
+
+  const w = getWorker();
+  const id = ++msgId;
+
+  const raw = await new Promise<{ ok: boolean; raw?: string; error?: string }>(
+    (resolve) => {
+      let settled = false;
+
+      const timer = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        // The infinite loop / runaway is stuck inside the worker — terminate it
+        // so it can never block the page. A fresh worker boots on next run.
+        killWorker();
+        resolve({ ok: false, error: "__TIMEOUT__" });
+      }, TIME_LIMIT_MS);
+
+      const onMessage = (e: MessageEvent) => {
+        const data = e.data as { id?: number; ok: boolean; raw?: string; error?: string; type?: string };
+        if (data.type === "ready") return;
+        if (data.id !== id) return;
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve({ ok: data.ok, raw: data.raw, error: data.error });
+      };
+
+      const onError = (ev: ErrorEvent) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        killWorker();
+        resolve({ ok: false, error: ev.message || "Worker crashed" });
+      };
+
+      function cleanup() {
+        clearTimeout(timer);
+        w.removeEventListener("message", onMessage);
+        w.removeEventListener("error", onError);
+      }
+
+      w.addEventListener("message", onMessage);
+      w.addEventListener("error", onError);
+      w.postMessage({
+        type: "run",
+        id,
+        code: userCode,
+        tests,
+        funcName: problem.funcName,
+        mode: problem.compare || "exact",
+        argTypes: problem.argTypes || problem.params.map(() => "raw"),
+        retType: problem.retType || "raw",
+      });
+    }
+  );
+
+  if (!raw.ok) {
+    if (raw.error === "__TIMEOUT__") {
+      return {
+        results: [],
+        passed: 0,
+        total: tests.length,
+        allPassed: false,
+        timedOut: true,
+        runtimeError:
+          `Time Limit Exceeded (> ${TIME_LIMIT_MS / 1000}s).\n` +
+          "Your code likely contains an infinite loop or is far too slow. " +
+          "Check your loop conditions and recursion base cases.",
+      };
+    }
+    return {
+      results: [],
+      passed: 0,
+      total: tests.length,
+      allPassed: false,
+      runtimeError: cleanTraceback(raw.error || "Unknown error"),
+    };
+  }
+
   try {
-    // (re)define the harness then user code in a fresh-ish namespace
-    await py.runPythonAsync(HARNESS);
-    // run user code; capture definition errors
-    py.globals.set("__apex_user_code", userCode);
-    await py.runPythonAsync(
-      `exec(__apex_user_code, globals())`
-    );
-    py.globals.set("__apex_tests_json", JSON.stringify(tests));
-    py.globals.set("__apex_func", problem.funcName);
-    py.globals.set("__apex_mode", problem.compare || "exact");
-    py.globals.set(
-      "__apex_argtypes",
-      JSON.stringify(problem.argTypes || problem.params.map(() => "raw"))
-    );
-    py.globals.set("__apex_rettype", problem.retType || "raw");
-    const raw = (await py.runPythonAsync(
-      `__apex_run(__apex_tests_json, __apex_func, __apex_mode, __apex_argtypes, __apex_rettype)`
-    )) as string;
-    const parsed = JSON.parse(raw) as Omit<
+    const parsed = JSON.parse(raw.raw as string) as Omit<
       TestRunResult,
       "input" | "expected"
     >[];
@@ -208,25 +331,12 @@ export async function runTests(
       runtimeError: null,
     };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    // Clean pyodide traceback to the most relevant lines
-    const clean = msg
-      .split("\n")
-      .filter(
-        (l) =>
-          l.trim() &&
-          !l.includes("pyodide") &&
-          !l.includes("File \"<exec>\"") &&
-          !l.includes("__apex")
-      )
-      .slice(-6)
-      .join("\n");
     return {
       results: [],
       passed: 0,
       total: tests.length,
       allPassed: false,
-      runtimeError: clean || msg,
+      runtimeError: cleanTraceback(e instanceof Error ? e.message : String(e)),
     };
   }
 }

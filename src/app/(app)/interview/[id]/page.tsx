@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 import {
   ArrowLeft,
   HelpCircle,
@@ -9,12 +10,25 @@ import {
   Brain,
   Zap,
   Code2,
+  CheckCircle2,
+  Circle,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
 } from "lucide-react";
-import { interviewById, interviewBySection } from "@/lib/content";
+import {
+  interviewById,
+  interviewBySection,
+  interviewSiblings,
+} from "@/lib/content";
+import { useProgress } from "@/lib/progress";
 
 export default function ConceptDetail() {
   const params = useParams<{ id: string }>();
   const c = interviewById(params.id);
+  const { progress, markInterviewSeen } = useProgress();
+  const studied = !!progress.interviewSeen[params.id];
+  const { prev, next, index, list } = interviewSiblings(params.id);
 
   if (!c) {
     return (
@@ -40,7 +54,30 @@ export default function ConceptDetail() {
         <ArrowLeft size={15} /> Interview prep
       </Link>
 
-      <div className="pill pill-clay mb-3">{c.section}</div>
+      <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <span className="pill pill-clay">{c.section}</span>
+          {index >= 0 && (
+            <span className="text-xs text-bone-faint">
+              {index + 1} / {list.length}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => markInterviewSeen(c.id, !studied)}
+          className={`btn py-2 ${studied ? "btn-outline" : "btn-primary"}`}
+        >
+          {studied ? (
+            <>
+              <CheckCircle2 size={15} className="text-olive" /> Studied
+            </>
+          ) : (
+            <>
+              <Circle size={15} /> Mark as studied
+            </>
+          )}
+        </button>
+      </div>
       <h1 className="font-display text-3xl md:text-4xl text-bone">{c.title}</h1>
       <p className="text-lg text-bone mt-3 leading-relaxed">{c.definition}</p>
 
@@ -76,21 +113,7 @@ export default function ConceptDetail() {
       )}
 
       {c.questions.length > 0 && (
-        <div className="surface p-5 mt-4">
-          <div className="flex items-center gap-2 text-clay-bright text-sm font-medium mb-3">
-            <HelpCircle size={16} /> Common interview questions
-          </div>
-          <ul className="space-y-2">
-            {c.questions.map((q, i) => (
-              <li
-                key={i}
-                className="text-bone-dim text-sm flex items-start gap-2"
-              >
-                <span className="text-clay-bright mt-0.5">→</span> {q}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <QuestionSelfTest key={c.id} questions={c.questions} />
       )}
 
       {c.mistakes.length > 0 && (
@@ -131,6 +154,42 @@ export default function ConceptDetail() {
         )}
       </div>
 
+      {/* prev / next within section */}
+      <div className="mt-8 grid grid-cols-2 gap-3">
+        {prev ? (
+          <Link
+            href={`/interview/${prev.id}`}
+            className="surface card-hover p-4 flex items-center gap-2"
+          >
+            <ChevronLeft size={18} className="text-bone-faint shrink-0" />
+            <span className="min-w-0">
+              <span className="block text-[11px] text-bone-faint">Previous</span>
+              <span className="block text-bone text-sm truncate">
+                {prev.title}
+              </span>
+            </span>
+          </Link>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link
+            href={`/interview/${next.id}`}
+            className="surface card-hover p-4 flex items-center gap-2 justify-end text-right"
+          >
+            <span className="min-w-0">
+              <span className="block text-[11px] text-bone-faint">Next</span>
+              <span className="block text-bone text-sm truncate">
+                {next.title}
+              </span>
+            </span>
+            <ChevronRight size={18} className="text-bone-faint shrink-0" />
+          </Link>
+        ) : (
+          <span />
+        )}
+      </div>
+
       {related.length > 0 && (
         <div className="mt-8">
           <div className="text-sm text-bone-faint mb-2">More in {c.section}</div>
@@ -143,6 +202,59 @@ export default function ConceptDetail() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function QuestionSelfTest({ questions }: { questions: string[] }) {
+  const [done, setDone] = useState<Set<number>>(new Set());
+  const toggle = (i: number) =>
+    setDone((prev) => {
+      const n = new Set(prev);
+      if (n.has(i)) n.delete(i);
+      else n.add(i);
+      return n;
+    });
+
+  return (
+    <div className="surface p-5 mt-4">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2 text-clay-bright text-sm font-medium">
+          <HelpCircle size={16} /> Practice questions
+        </div>
+        <span className="text-xs text-bone-faint">
+          {done.size}/{questions.length} you can answer
+        </span>
+      </div>
+      <p className="text-xs text-bone-faint mb-3 flex items-center gap-1.5">
+        <Eye size={12} /> Read each one and answer out loud, then tick the ones
+        you nailed.
+      </p>
+      <ul className="space-y-1.5">
+        {questions.map((q, i) => {
+          const ok = done.has(i);
+          return (
+            <li key={i}>
+              <button
+                onClick={() => toggle(i)}
+                className={`w-full text-left text-sm flex items-start gap-2 rounded-lg p-2 transition-colors ${
+                  ok ? "bg-olive/10 text-bone" : "hover:bg-stone-2 text-bone-dim"
+                }`}
+              >
+                {ok ? (
+                  <CheckCircle2 size={15} className="text-olive mt-0.5 shrink-0" />
+                ) : (
+                  <Circle
+                    size={15}
+                    className="text-bone-faint/40 mt-0.5 shrink-0"
+                  />
+                )}
+                <span>{q}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
