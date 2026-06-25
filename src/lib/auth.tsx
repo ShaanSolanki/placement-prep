@@ -25,6 +25,7 @@ interface AuthState {
   signInGoogle: () => Promise<void>;
   signInEmail: (email: string, password: string) => Promise<void>;
   signUpEmail: (name: string, email: string, password: string) => Promise<void>;
+  updateName: (name: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -54,13 +55,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (name) await updateProfile(cred.user, { displayName: name });
     setUser({ ...cred.user });
   };
+  const updateName = async (name: string) => {
+    if (!auth.currentUser) return;
+    await updateProfile(auth.currentUser, { displayName: name });
+    setUser({ ...auth.currentUser });
+  };
   const logout = async () => {
     await signOut(auth);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, signInGoogle, signInEmail, signUpEmail, logout }}
+      value={{
+        user,
+        loading,
+        signInGoogle,
+        signInEmail,
+        signUpEmail,
+        updateName,
+        logout,
+      }}
     >
       <ProgressProvider user={user}>{children}</ProgressProvider>
     </AuthContext.Provider>

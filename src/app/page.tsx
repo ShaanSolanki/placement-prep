@@ -10,6 +10,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { Brand } from "@/components/Brand";
+import { RedirectIfAuthed } from "@/components/RedirectIfAuthed";
 import {
   dsaCards,
   codingProblems,
@@ -66,6 +67,7 @@ const modules = [
 export default function Landing() {
   return (
     <div className="relative z-10">
+      <RedirectIfAuthed />
       <header className="glass-nav sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Brand />

@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Code2,
@@ -12,14 +12,22 @@ import {
   AlertTriangle,
   Clock,
   GitBranch,
+  ExternalLink,
+  Eye,
 } from "lucide-react";
-import { dsaCardById, difficultyClass, codingForTitle } from "@/lib/content";
+import {
+  dsaCardById,
+  difficultyClass,
+  codingForTitle,
+  leetcodeUrl,
+} from "@/lib/content";
 import { useProgress } from "@/lib/progress";
 
 export default function DsaDetail() {
   const params = useParams<{ id: string }>();
   const card = dsaCardById(params.id);
   const { markDsaSeen } = useProgress();
+  const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
     if (card) markDsaSeen(card.id);
@@ -55,6 +63,16 @@ export default function DsaDetail() {
         </span>
         {card.frequency && <span className="pill">Freq: {card.frequency}</span>}
         {card.importance && <span className="pill">{card.importance}</span>}
+        <a
+          href={leetcodeUrl(card.title)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pill border border-amber/40 bg-amber/10 text-amber inline-flex items-center gap-1 hover:bg-amber/20 transition-colors"
+          title="Open on LeetCode"
+        >
+          {card.leetcode ? `LeetCode #${card.leetcode}` : "Find on LeetCode"}
+          <ExternalLink size={11} />
+        </a>
       </div>
 
       <h1 className="font-display text-3xl md:text-4xl text-bone mb-4">
@@ -89,6 +107,36 @@ export default function DsaDetail() {
           </div>
         )}
       </div>
+
+      {/* Answer / solution */}
+      {card.answer && (
+        <div className="mt-4">
+          <button
+            onClick={() => setShowAnswer((v) => !v)}
+            className="btn btn-outline py-2"
+          >
+            <Eye size={15} /> {showAnswer ? "Hide answer" : "Show answer"}
+          </button>
+          {showAnswer && (
+            <div className="surface-2 mt-3 overflow-hidden">
+              <div className="px-4 py-2 text-xs text-bone-faint border-b border-line flex items-center gap-1.5">
+                <Code2 size={13} /> Solution (Python)
+                {coding && (
+                  <Link
+                    href={`/code/${coding.id}`}
+                    className="ml-auto text-clay-bright hover:underline"
+                  >
+                    Run it in the judge →
+                  </Link>
+                )}
+              </div>
+              <pre className="p-4 text-sm font-mono text-bone overflow-x-auto whitespace-pre">
+                {card.answer}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Insight grid */}
       <div className="grid sm:grid-cols-2 gap-4 mt-4">

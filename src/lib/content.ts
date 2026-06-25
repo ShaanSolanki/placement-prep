@@ -20,6 +20,8 @@ export interface DsaCard {
   complexity: { time: string; space: string };
   similar: string[];
   rookieMistake: string;
+  leetcode?: number | null;
+  answer?: string | null;
 }
 
 export interface CodingProblem {
@@ -209,6 +211,12 @@ export function interviewSiblings(id: string) {
     prev: index > 0 ? list[index - 1] : undefined,
     next: index >= 0 && index < list.length - 1 ? list[index + 1] : undefined,
   };
+}
+
+// A reliable LeetCode link: searches the problem set by title so it lands
+// somewhere useful even when we don't have an exact slug.
+export function leetcodeUrl(title: string) {
+  return `https://leetcode.com/problemset/?search=${encodeURIComponent(title)}`;
 }
 
 // ---- shared ----

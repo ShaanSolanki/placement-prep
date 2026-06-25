@@ -106,6 +106,11 @@ export default function DsaPage() {
                   {c.difficulty}
                 </span>
                 <span className="pill">{c.pattern}</span>
+                {c.leetcode && (
+                  <span className="pill border border-amber/40 bg-amber/10 text-amber">
+                    LC #{c.leetcode}
+                  </span>
+                )}
                 {c.frequency.includes("Very High") && (
                   <span className="pill pill-clay">
                     <Flame size={11} /> Hot
